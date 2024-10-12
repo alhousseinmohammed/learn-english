@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\ProgressController;
+use Carbon\Carbon as CarbonCarbon;
+use Illuminate\Support\Carbon;
+
 use function Laravel\Prompts\form;
 use function PHPUnit\Framework\directoryExists;
 
@@ -123,7 +126,7 @@ $lastOrder = $lesson ? $lesson->exercises->max('order') : null;
         $exercise = Exercise::find($id);
         return view($exercise->type)->with ('exercise', $exercise);
     }
-     public function showNext($id)
+    public function showNext($id)
     {
         //
         $exercise = Exercise::find($id);
@@ -136,10 +139,25 @@ if (!$next) {
         // $response = Http::post(route('progress.store'), [
         //     'lesson_id' => $exercise->lesson_id
         // ]);
+            $learner = auth()->user()->learner;
+            $today = Carbon::now()->startOfDay();
+            $lastProgress = $learner->progress()->latest('progress.created_at')->first();
+            if ($lastProgress && $lastProgress->created_at->startOfDay()->lt($today) || !$lastProgress) {
+                // If the last progress is not today, increase the current streak
+                $learner->current_streak += 1;
+                $learner->save();
+            }
+
+
             $request = new Request(["lesson_id" => $exercise->lesson_id]);
             $progress = new ProgressController();
-            return $progress->store($request);
+            $progress->store($request);
+            return redirect()->action('App\Http\Controllers\LessonController@index');
+
+
 }
+        return redirect()->action('App\Http\Controllers\ExerciseController@show',$next->id);
+
         return view($next->type)->with ('exercise', $next);
     }
 
@@ -166,5 +184,43 @@ if (!$next) {
     public function destroy(Exercise $exercise)
     {
         //
+    }
+
+    public function skip($id) {
+        $learner = auth()->user()->learner;
+
+        $exercise = Exercise::find($id);
+        $nextOrder = $exercise->order + 1;
+        $next = Exercise::where('order', $nextOrder)->where('lesson_id', $exercise->lesson_id)->first();
+
+        if (!$learner->super) {
+            if ($learner->current_hearts > 0) {
+                $learner->current_hearts -= 1;
+                $learner->save();
+            }
+            if ($learner->current_hearts > 0)
+
+                {
+                    if (!$next) {
+
+            $request = new Request(["lesson_id" => $exercise->lesson_id]);
+            $progress = new ProgressController();
+            return $progress->store($request);
+}
+
+                    return redirect()->action('App\Http\Controllers\ExerciseController@show',$next->id);}
+            else
+                return redirect()->action('App\Http\Controllers\LessonController@index');
+
+
+        } else                                 {
+                    if (!$next) {
+
+            $request = new Request(["lesson_id" => $exercise->lesson_id]);
+            $progress = new ProgressController();
+            return $progress->store($request);
+}
+
+                    return redirect()->action('App\Http\Controllers\ExerciseController@show',$next->id);}
     }
 }

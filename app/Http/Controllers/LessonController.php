@@ -18,10 +18,13 @@ class LessonController extends Controller
     {
         //
         // $lessons = Lesson::with('theme')->get();
+if(!auth()->user()) {
+            return redirect()->route('login');
+}
         $lessons = Lesson::with('exercises')->get();
         $themes = Theme::with(['lessons.exercises'])->get();
 
-        $learner_id = auth()->user()->learner->id;
+        $learner = auth()->user()->learner;
 
         $lastOrder = auth()->user()->learner->progress()
     ->with('lesson') // Load the related lessons
@@ -45,7 +48,7 @@ class LessonController extends Controller
         // }else{
         //     $lastOrder = 0;
         // }
-    return view(view: 'superduolingo')->with('themes',$themes)->with('lastLesson',$lastOrder)->with('lastTheme', $lastTheme)->with('lastInTheme', $lastInTheme);
+    return view(view: 'learn')->with('themes',$themes)->with('lastLesson',$lastOrder)->with('lastTheme', $lastTheme)->with('lastInTheme', $lastInTheme)->with('learner' ,$learner);
     }
 
     /**
@@ -81,7 +84,14 @@ $lastOrder = $theme->lessons ? $theme->lessons->max('order') : 0;
     public function show(Lesson $lesson)
     {
         //
-        return view('map');
+        // dd(auth()->user()->learner->current_hearts);
+        if (auth()->user()->learner->current_hearts > 0)
+        {
+            return view('types.dialogue1')->with('lesson', $lesson);
+            return redirect()->action('App\Http\Controllers\ExerciseController@show', $lesson->exercises()->orderBy('order')->first());
+        } else {
+            return redirect()->action('App\Http\Controllers\LessonController@index');
+        }
     }
 
     /**

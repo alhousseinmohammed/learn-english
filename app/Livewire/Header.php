@@ -8,10 +8,12 @@ use Livewire\Component;
 
 class Header extends Component
 {
+    protected $listeners = ["Heartsupdated" => "updateHearts"];
     public $hearts;
     public $exercise_id;
     public $exercise;
     public $sum;
+    public $super;
 
     public function mount(int $exercise_id) // Use mount method to initialize properties
     {
@@ -20,10 +22,11 @@ class Header extends Component
         $exercise = Exercise::find($exercise_id);
         $this->exercise = $exercise;
 $this->sum = Exercise::where('lesson_id', $exercise->lesson_id)->max('order');
-
-
+$this->super = optional(auth()->user())->learner->super ?? false;
     }
-
+public function updateHearts() {
+        $this->hearts = optional(auth()->user())->learner->current_hearts ?? 0; // Use optional to prevent errors
+}
     public function render()
     {
         return view('livewire.header');

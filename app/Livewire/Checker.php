@@ -18,7 +18,7 @@ class Checker extends Component
         if ($this->answer == $this->exercise->answer)
         {$this->name = $this->exercise->id;
             // return redirect()->action('App\Ht);
-            // return redirect()->route('exercise.showNext', ['id' => 15]);
+        // return redirect()->route('exercise.showNext', ['id' => 15]);
             redirect(url('/exercise/next/' . $this->exercise->id));
 
             // redirect()->route('exercise.showNext', $this->exercise->id+1);

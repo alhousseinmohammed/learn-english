@@ -102,7 +102,7 @@
             <!-- Image Upload -->
             <div class="form-group">
                 <label for="image">Upload Image:</label>
-                <input type="file" name="image" id="image" accept="audio/*" required>
+                <input type="file" name="image" id="image" accept="audio/*">
 
 
             </div>

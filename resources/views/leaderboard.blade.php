@@ -1,3 +1,6 @@
+@php
+    $learner = auth()->user()->learner;
+@endphp
 <html lang="en">
 
 <head>
@@ -8,12 +11,22 @@
     <link rel="stylesheet" href="{{ url('duolingo-clone-master/css/learn.css') }}">
     <link rel="stylesheet" href="{{ url('duolingo-clone-master/css/main.css') }}">
     <link rel="stylesheet" href="{{ url('duolingo-clone-master/css/leaderboard.css') }}">
+    <style>
+        .diffmedals {
+            display: flex;
+            justify-content: center;
+        }
+
+        .medalsdiv {
+            position: normal;
+        }
+    </style>
 </head>
 
 <body cz-shortcut-listen="true">
     <div class="main-container">
         <!------------------------------------- Left Sidebar ------------------------------------------------>
-        @livewire('sidebar')
+        @livewire('sidebar', ['selected' => 2])
 
         <!------------------------------------- Content-Container ------------------------------------------------>
         <div class="content-container">
@@ -69,10 +82,11 @@
 
                     <div class="center-container-firstdiv">
                         <div class="diffmedals">
-                            <div class="medalsdiv" style="--offset: 0;">
+                            <div class="medalsdiv" {{-- style="--offset: 0;" --}}>
+
                                 <div class="medaldiv">
                                     <img class="p9XXu"
-                                        src="https://d35aaqx5ub95lt.cloudfront.net/images/leagues/838ba65643baef4c8442317df514cab5.svg">
+                                        src="{{ url('duolingo-clone-master/assets/svg/' . Auth::user()->learner->league->image) }}">
                                 </div>
                                 <img class="_14I3k"
                                     src="https://d35aaqx5ub95lt.cloudfront.net/images/leagues/1b4fb092de75e4ecefd8e92f10b4ddd2.svg">
@@ -87,8 +101,21 @@
 
 
                             </div>
+                            @foreach ($leagues as $league)
+                                @switch(true)
+                                    @case($league->xp_required == $learner->league->xp_required)
+                                    @break
+
+                                    <div class="medaldiv">
+                                        <img class="p9XXu"
+                                            src="{{ url('duolingo-clone-master/assets/svg/' . Auth::user()->learner->league->image) }}">
+                                    </div>
+
+                                    @default
+                                @endswitch
+                            @endforeach
                         </div>
-                        <div class="_250dJ">Nexus League</div>
+                        <div class="_250dJ">{{ auth()->user()->learner->league->name }}</div>
                         <div class="_2Xv_D">
 
                         </div>
@@ -102,13 +129,38 @@
                         @endphp
                         {{-- real content --}}
                         @foreach ($learners as $learner)
+                            @php
+                                ++$order;
+                            @endphp
                             <a class="eachprofile" id="eachprofile_13">
-                                <div class="profindex">{{ ++$order }}</div>
+                                @if ($order <= 3)
+                                    @switch($order)
+                                        @case(1)
+                                            <img src="//d35aaqx5ub95lt.cloudfront.net/images/leagues/9e4f18c0bc42c7508d5fa5b18346af11.svg"
+                                                alt="first" />
+                                        @break
+
+                                        @case(2)
+                                            <img src="https://d35aaqx5ub95lt.cloudfront.net/images/leagues/cc7b8f8582e9cfb88408ab851ec2e9bd.svg"
+                                                alst="second" />
+                                        @break
+
+                                        @case(3)
+                                            <img src='https://d35aaqx5ub95lt.cloudfront.net/images/leagues/eef523c872b71178ef5acb2442d453a2.svg'
+                                                alt="third" />
+                                        @break
+
+                                        @default
+                                    @endswitch
+                                @else
+                                    <div class="profindex">{{ $order }}</div>
+                                @endif
+
                                 <div class="divforimg">
                                     <img class="image" src="../assets/svg/profile-image-temp.svg">
                                     <div class="divforbubble">
                                         <img class="bubble" id="bubble"
-                                            src="//d35aaqx5ub95lt.cloudfront.net/images/leagues/a35f1db4398fd29e66f1abc33a0d11a2.svg">
+                                            @if ($learner->status) src={{ $learner->status->image }} @else src="//d35aaqx5ub95lt.cloudfront.net/images/leagues/a35f1db4398fd29e66f1abc33a0d11a2.svg" @endif />
                                     </div>
                                 </div>
                                 <div class="divforname">
@@ -170,7 +222,7 @@
                     </span>
                 </a>
             </div>
-            <script type="module" src="{{ url('duolingo-clone-master/js/leaderboard.js') }}"></script>
+            {{-- <script type="module" src="{{ url('duolingo-clone-master/js/leaderboard.js') }}"></script> --}}
 
             <!-- Code injected by live-server -->
             <script>

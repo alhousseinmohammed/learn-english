@@ -3,6 +3,10 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+use App\Models\Level;
+use App\Models\Theme;
+use App\Models\League;
+
 use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\LearnerController;
 use App\Http\Controllers\ProgressController;
@@ -29,12 +33,12 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return view(view: 'dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
@@ -83,12 +87,16 @@ Route::get('/match', action: function () {
 });
 
 Route::get(uri: '/leaderboard', action: function () {
-    return view(view: 'leaderboard')->with('learners', $learners = Learner::orderBy('experience_points','desc')->get());
+    return view(view: 'leaderboard')->with('learners', $learners = Learner::orderBy('experience_points','desc')->get())->with('leagues', League::all());
 })->name('leaderboard');
 
 Route::get(uri: '/produ', action: function () {
     return view(view: 'profile-page');
 })->name('produ');
+
+Route::get(uri: '/edit-produ', action: function () {
+    return view(view: 'profile-edit-page');
+})->name('eidt-produ');
 
 // Route::get('/earn/{gems_earned}',  function ($gems_earned) {
 //             $learner = auth()->user()->learner;
@@ -101,6 +109,30 @@ Route::get('/earn/{gems_earned}',  [LearnerController::class, 'earnGems'])->name
 
 Route::get('/pay/{gems_earned}',  [LearnerController::class, 'payGems'])->name('learner.pay');
 
+// Route::get('/super',  [LearnerController::class, 'super'])->name('learner.super');
+
 Route::get('/shopping', function () {
     return view('shoppingpage');
 })->name('shopping');
+
+Route::get('/super', function () {
+    return view('superduolingo');
+})->name('super');
+
+Route::get('/skip/{exerciseId}', [ExerciseController::class, 'skip'])->name('exercise.skip');
+
+Route::get('dialogue', function () {
+    return view('types.dialogue');
+})->name('dialogue');
+
+Route::get('create', function () {
+    return view('admin.create.create_any')->with('themes', Theme::all())->with('levels', Level::all());;
+})->name('create');
+
+Route::get('create', function () {
+    return view('admin.create.create_any')->with('themes', Theme::all())->with('levels', Level::all());;
+})->name('create');
+
+Route::get('dialogue1', function () {
+    return view('types.dialogue1');
+})->name('dialogue1');

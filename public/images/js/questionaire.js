@@ -436,7 +436,7 @@ const revertQuestionScreen = () => {
     document.querySelector('.exit-overlay').style.display = 'none'
 }
 
-//heart zero shop popup 
+//heart zero shop popup
 let showShopPopup = () => {
     document.getElementById("gem-count-text").textContent = gems;
     localStorage.setItem('xpCount', xpCount + 1);
@@ -444,7 +444,7 @@ let showShopPopup = () => {
     document.querySelector('.shop-overlay').style.display = 'flex'
 }
 
-//exit alert popup 
+//exit alert popup
 
 let showAlertPopup = () => {
     document.querySelector('.exit-overlay').style.display = 'flex'

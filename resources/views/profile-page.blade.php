@@ -18,139 +18,12 @@
 <body>
     <div class="main-container">
         <!-- Left Sidebar -->
-        <div class="sidebar">
-            <div class="logo-container">
-                <img src="{{ url('duolingo-clone-master/assets/svg/duolingo-green-text-only.svg') }}"
-                    alt="dolingo-text" />
-            </div>
-            <div class="sidebar-buttons">
-                <a href="./learn.html" class="button-in-sidebar">
-                    <span class="icon-and-text-wrap">
-                        <div class="icon-in-button">
-                            <img src="{{ url('duolingo-clone-master/assets/svg/home-in-sidebar.svg') }}"
-                                alt="home-icon" />
-                        </div>
-                        <span class="text-in-button"> Learn </span>
-                    </span>
-                </a>
-                <a href="./leaderboard.html" class="button-in-sidebar">
-                    <span class="icon-and-text-wrap">
-                        <div class="icon-in-button">
-                            <img src="{{ url('duolingo-clone-master/assets/svg/badge-in-sidebar.svg') }}"
-                                alt="home-icon" />
-                        </div>
-                        <span class="text-in-button"> Leaderboard </span>
-                    </span>
-                </a>
-                <a href="./profile-page.html" class="button-in-sidebar">
-                    <span class="icon-and-text-wrap selected">
-                        <div class="icon-in-button">
-                            <img src="{{ url('duolingo-clone-master/assets/svg/profile-image-temp.svg') }}"
-                                class="profile" id="left-profile-image" />
-                        </div>
-                        <span class="text-in-button"> Profile </span>
-                    </span>
-                </a>
-                <a href="./shoppingpage.html" class="button-in-sidebar">
-                    <span class="icon-and-text-wrap">
-                        <div class="icon-in-button">
-                            <img src="{{ url('duolingo-clone-master/assets/svg/shop-in-sidebar.svg') }}"
-                                alt="home-icon" />
-                        </div>
-                        <span class="text-in-button"> Shop </span>
-                    </span>
-                </a>
-                <a href="./faq.html" class="button-in-sidebar">
-                    <span class="icon-and-text-wrap">
-                        <div class="icon-in-button">
-                            <img src="{{ url('duolingo-clone-master/assets/images/sidebar-icon-faq.png') }}"
-                                alt="home-icon" />
-                        </div>
-                        <span class="text-in-button"> FAQ </span>
-                    </span>
-                </a>
-                <a href="" class="button-in-sidebar" id="logout-button">
-                    <span class="icon-and-text-wrap">
-                        <div class="icon-in-button">
-                            <img src="{{ url('duolingo-clone-master/assets/svg/Logout.svg') }}" alt="home-icon" />
-                        </div>
-                        <span class="text-in-button"> Log Out </span>
-                    </span>
-                </a>
-            </div>
-        </div>
+        @livewire('sidebar', ['selected' => 3])
+
 
         <div class="content-container">
             <!----------------------------------- Right sidebar ------------------------------------------------>
-            <div class="right-sidebar">
-                <div class="right-sidebar-header">
-                    <a href="" class="button-in-sidebar">
-                        <span class="icon-and-text-wrap">
-                            <div class="icon-in-button">
-                                <img src="{{ url('duolingo-clone-master/assets/svg/country-flags/transparent.svg') }}"
-                                    class="country-flag" />
-                            </div>
-                        </span>
-                    </a>
-                    <a href="" class="button-in-sidebar">
-                        <span class="icon-and-text-wrap">
-                            <div class="icon-in-button">
-                                <img src="{{ url('duolingo-clone-master/assets/svg/lesson-xp.svg') }}" alt="home-icon"
-                                    class="profile" />
-                            </div>
-                            <span class="text-in-button fire-text"> 400 </span>
-                        </span>
-                    </a>
-                    <a href="" class="button-in-sidebar">
-                        <span class="icon-and-text-wrap">
-                            <div class="icon-in-button">
-                                <img src="{{ url('duolingo-clone-master/assets/svg/gems-icon.svg') }}" alt="home-icon"
-                                    class="profile" />
-                            </div>
-                            <span class="text-in-button gem-text"> 7393 </span>
-                        </span>
-                    </a>
-                    <a href="" class="button-in-sidebar">
-                        <span class="icon-and-text-wrap">
-                            <div class="icon-in-button">
-                                <img src="{{ url('duolingo-clone-master/assets/svg/heart-filled-red.svg') }}"
-                                    alt="home-icon" class="profile" />
-                            </div>
-                            <span class="text-in-button heart-text"> 5 </span>
-                        </span>
-                    </a>
-                </div>
-                <div class="try-super-box">
-                    <img src="{{ url('duolingo-clone-master/assets/svg/super-icon.svg') }}" alt="super-text"
-                        id="try-super-image-one" />
-                    <img src="{{ url('duolingo-clone-master/assets/svg/super-duo-owl.svg') }}" alt="super-duo-owl"
-                        id="try-super-image-two" />
-                    <div class="content-text">
-                        <h2>Try Super for free</h2>
-                        <div class="description">
-                            No ads, personalized practice, and unlimited Legendary!
-                        </div>
-                        <button id="try-super-button" onclick="window.location.href='./superduolingo.html'">
-                            Try 2 weeks free
-                        </button>
-                    </div>
-                </div>
-                <div class="try-super-box">
-                    <div class="league-header-with-link">
-                        <h2>Nexus League</h2>
-                        <h2><a href="./leaderboard.html">View League</a></h2>
-                    </div>
-                    <div class="league-header-with-link">
-                        <img src="{{ url('duolingo-clone-master/assets/svg/amethyst-league-icon.svg') }}"
-                            alt="amethyst-league-icon" />
-                        <div class="league-text-container">
-                            <div class="description">
-                                Compete with others to move up the league.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @livewire('RightSidebar')
 
             <!-- Middle Section -->
             <div class="profile-middle-container">
@@ -171,9 +44,10 @@
                         </div>
                         <div class="profile-image-div">
                             <span class=""></span>
-                            <img src="" alt="" id="profile-image" />
+                            <img @if (Auth::user()->photo) src="{{ url('photos' . Auth::user()->photo) }}" @endif
+                                alt="" id="profile-image" />
                             <div class="edit-account-div">
-                                <a href="{{ url('duolingo-clone-master/html/profile-edit-page.html') }}">
+                                <a href="{{ route('profile.edit') }}">
                                     <img src="{{ url('duolingo-clone-master/assets/svg/edit-button-logo.svg') }}"
                                         alt="" />
                                 </a>
@@ -213,10 +87,10 @@
                             </div>
                             <div>
                                 <div class="statistics-section-one">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/bronze-league.svg') }}"
+                                    <img src="{{ url('duolingo-clone-master/assets/svg/' . Auth::user()->learner->league->image) }}"
                                         class="statistics-streak-icon" alt="" />
                                     <div class="statistics-section-one-content">
-                                        <h4 class="statistics-value">Nexus</h4>
+                                        <h4 class="statistics-value">{{ Auth::user()->learner->league->name }}</h4>
                                         <div class="statistics-text">Current League</div>
                                     </div>
                                 </div>
@@ -237,8 +111,7 @@
                     <a class="logout-button" id="logout-button-mobile">
                         <span class="icon-and-text-wrap">
                             <div class="icon-in-button">
-                                <img src="{{ url('duolingo-clone-master/assets/svg/Logout.svg') }}"
-                                    alt="home-icon" />
+                                <img src="{{ url('duolingo-clone-master/assets/svg/Logout.svg') }}" alt="home-icon" />
                             </div>
                             <span class="text-in-button text-logout"> LOG OUT </span>
                         </span>
@@ -267,9 +140,8 @@
         <a href="profile-page.html" class="button-in-sidebar">
             <span class="icon-and-text-wrap selected">
                 <div class="icon-in-button">
-                    <img id="profile-bottom"
-                        src="{{ url('duolingo-clone-master/assets/svg/profile-image-temp.svg') }}" alt="home-icon"
-                        class="profile" />
+                    <img id="profile-bottom" src="{{ url('duolingo-clone-master/assets/svg/profile-image-temp.svg') }}"
+                        alt="home-icon" class="profile" />
                 </div>
 
             </span>

@@ -36,14 +36,15 @@ class ProgressController extends Controller
             $progress = new Progress();
             $progress->lesson_id = $request->lesson_id;
             $learner = auth()->user()->learner;
-            $learner->experience_points = $learner->experience_points + 10;
+            $learnerController = new LearnerController;
+            $learnerController->progress(10);
             $learner->save();
             $progress->learner_id = $learner_id;
             $progress->save();
         }
         // return redirect()->ac
-        $lesson = new LessonController();
-        return $lesson->index();
+                return redirect()->action('App\Http\Controllers\LessonController@index');
+
     }
 
     /**

@@ -7,6 +7,10 @@ use Livewire\Component;
 
 class FullButton extends Component
 {
+    public $afford;
+    public function mount() {
+        $this->afford = auth()->user()->learner->current_gems > 300;
+    }
     public function payGems () {
         $learnerController = new LearnerController;
         $learnerController->payGems(300);

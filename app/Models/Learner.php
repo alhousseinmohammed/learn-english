@@ -22,8 +22,23 @@ class Learner extends Model
         return $this->hasMany(Progress::class);
     }
 
+public function league()
+{
+    return $this->belongsTo(League::class);
+}
+public function status()
+{
+    return $this->belongsTo(related: Status::class);
+}
+public function updateLeague() {
+        $xp = $this->experience_points;
+        $league_id = League::where('xp-required', '<=', $xp)->orderBy('xp-required', 'desc')->first()->id;
+        $this->league_id = $league_id;
+        $this->save();
+}
+
     public function refillHearts() {
-        $currentDate = now();
+        // $currentDate = now();
 
         // Here you could check the last heart refill condition if needed
         // if ($this->updated_at === null || $currentDate->diffInDays($this->updated_at) >= 1) {

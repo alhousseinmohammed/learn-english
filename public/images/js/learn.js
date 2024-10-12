@@ -508,7 +508,7 @@ const placeUnitsandLessons = (sectionData, userData) => {
 
   scrollableContainer.insertAdjacentHTML("beforeend", bottomNavBar);
   placeuserStatistics();
-  
+
   updateStatistics();
   scrollToCurrentLesson();
 }

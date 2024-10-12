@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <link rel="stylesheet" href="../css/questionaire.css" />
+    <link rel="stylesheet" href="../css/main.css" />
     @livewireStyles
     <style>
         body {
@@ -256,6 +258,29 @@
 
 <body onkeypress=" entCheck(event);choose(event)">
 
+    <div class="shop-overlay" style="display: none">
+        <div class="exit-box">
+            <div class="exit-box-contents">
+                <div class="gem-head-popup">
+                    <div class="gem-count-div">
+                        <img class="gem-img" src="../assets/svg/gems-icon.svg" />
+                        <span id="gem-count-text"></span>
+                    </div>
+                </div>
+                <span class="exit-text-head">You ran out of hearts!!</span>
+                <span class="exit-text-description">Get Super for Unlimited Hearts, or use gems to buy hearts.</span>
+                <div class="keep-learning-button-outer-active" id="check-button-div">
+                    <button class="button-div keep-learning-button" id="keep-learning-button" onclick="goToShop()">
+                        <span id="keep-learning">GO TO SHOP</span>
+                    </button>
+                </div>
+                <button class="end-question-session" onclick="exitToLearn()">
+                    <span>END SESSION</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     @livewire('header', ['exercise_id' => $exercise->id])
 
     @php
@@ -278,7 +303,7 @@
             </label>
         @endforeach
         <footer>
-            <div class="skip_button">تخطي</div>
+            <div onclick="skip()" class="skip_button">تخطي</div>
             <div onclick="check()" class="check_button">تحقق</div>
         </footer>
 
@@ -315,6 +340,11 @@
 
         function entCheck(event) {
             if (event.code == 'Enter') check();
+        }
+
+        function skip() {
+            let redirect = @json(url('skip/' . $exercise->id));
+            window.location.href = redirect;
         }
     </script>
 </body>

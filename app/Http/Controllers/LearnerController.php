@@ -40,10 +40,18 @@ class LearnerController extends Controller
     {
         //
         $learner = auth()->user()->learner;
-        $learner->current_hearts -= 1;
-        $learner->save();
-        $exercise = new ExerciseController;
-        return $exercise->show($exerciseId);
+        if (!$learner->super) {
+            if ($learner->current_hearts > 0) {
+                $learner->current_hearts -= 1;
+                $learner->save();
+            }
+            // if ($learner->current_hearts > 0)
+            //     return redirect()->action('App\Http\Controllers\ExerciseController@show',$exerciseId);
+            // else
+            //     return redirect()->action('App\Http\Controllers\LessonController@index');
+
+
+        } else                 return redirect()->action('App\Http\Controllers\ExerciseController@show',$exerciseId);
 
     }
 
@@ -80,10 +88,22 @@ class LearnerController extends Controller
 
     public function payGems (int $gems_paid) {
                     $learner = auth()->user()->learner;
+        $learner->updateLeague();
         if ($learner->current_gems > 0 & $learner->current_gems >= $gems_paid) {
             $learner->current_gems -= $gems_paid;
             $learner->save();
             // return redirect()->action('App\Http\Controllers\LessonController@index');
         }
+    }
+
+    public function super () {
+        auth()->user()->learner->super = !auth()->user()->learner->super;
+    }
+
+    public function progress($xp) {
+                    $learner = auth()->user()->learner;
+        $learner->experience_points += $xp;
+        $learner->save();
+        $learner->updateLeague();
     }
 }

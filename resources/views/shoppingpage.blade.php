@@ -16,89 +16,12 @@
 <body>
     <div class="main-container">
         <!------------------------------------- Left Sidebar ------------------------------------------------>
-        @livewire('sidebar')
-
+        @livewire('sidebar', ['selected' => 4])
         <!------------------------------------- Content-Container ------------------------------------------------>
         <div class="content-container">
             <!----------------------------------- Right sidebar ------------------------------------------------>
-            <div class="right-sidebar">
-                <div class="right-sidebar-header">
-                    <a href="" class="button-in-sidebar">
-                        <span class="icon-and-text-wrap">
-                            <div class="icon-in-button">
-                                <img src="{{ url('duolingo-clone-master/assets/svg/country-flags/transparent.svg') }}"
-                                    class="country-flag" />
-                            </div>
-                        </span>
-                    </a>
-                    <a href="" class="button-in-sidebar">
-                        <span class="icon-and-text-wrap">
-                            <div class="icon-in-button">
-                                <img src="{{ url('duolingo-clone-master/assets/svg/lesson-xp.svg') }}" alt="home-icon"
-                                    class="profile" />
-                            </div>
-                            <span class="text-in-button fire-text">
-                                400
-                            </span>
-                        </span>
-                    </a>
-                    <a href="" class="button-in-sidebar">
-                        <span class="icon-and-text-wrap">
-                            <div class="icon-in-button">
-                                <img src="{{ url('duolingo-clone-master/assets/svg/gems-icon.svg') }}" alt="home-icon"
-                                    class="profile" />
-                            </div>
-                            <span class="text-in-button gem-text">
-                                7393
-                            </span>
-                        </span>
-                    </a>
-                    <a href="" class="button-in-sidebar">
-                        <span class="icon-and-text-wrap">
-                            <div class="icon-in-button">
-                                <img src="{{ url('duolingo-clone-master/assets/svg/heart-filled-red.svg') }}"
-                                    alt="home-icon" class="profile" />
-                            </div>
-                            <span class="text-in-button heart-text">
-                                5
-                            </span>
-                        </span>
-                    </a>
-                </div>
-                <div class="try-super-box">
-                    <img src="{{ url('duolingo-clone-master/assets/svg/super-icon.svg') }}" alt="super-text"
-                        id="try-super-image-one" />
-                    <img src="{{ url('duolingo-clone-master/assets/svg/super-duo-owl.svg') }}" alt="super-duo-owl"
-                        id="try-super-image-two" />
-                    <div class="content-text">
-                        <h2>Try Super for free</h2>
-                        <div class="description">
-                            No ads, personalized practice, and unlimited
-                            Legendary!
-                        </div>
-                        <button id="try-super-button" onclick="openSuperDuolingoPage();">
-                            Try 2 weeks free
-                        </button>
-                    </div>
-                </div>
-                <div class="try-super-box">
-                    <div class="league-header-with-link">
-                        <h2>Nexus League</h2>
-                        <h2>
-                            <a href="./leaderboard.html">View League</a>
-                        </h2>
-                    </div>
-                    <div class="league-header-with-link">
-                        <img src="{{ url('duolingo-clone-master/assets/svg/amethyst-league-icon.svg') }}"
-                            alt="amethyst-league-icon" />
-                        <div class="league-text-container">
-                            <div class="description">
-                                Compete with others to move up the league.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @livewire('RightSidebar')
+
             <div class="scrollable-lesson-div">
                 <div class="center-container">
                     <div class="flyingowl">
@@ -171,9 +94,8 @@
         <a href="profile-page.html" class="button-in-sidebar">
             <span class="icon-and-text-wrap">
                 <div class="icon-in-button">
-                    <img id="profile-image"
-                        src="{{ url('duolingo-clone-master/assets/svg/profile-image-temp.svg') }}" alt="home-icon"
-                        class="profile" />
+                    <img id="profile-image" src="{{ url('duolingo-clone-master/assets/svg/profile-image-temp.svg') }}"
+                        alt="home-icon" class="profile" />
                 </div>
             </span>
         </a>
@@ -187,8 +109,7 @@
         <a href="./faq.html" class="button-in-sidebar">
             <span class="icon-and-text-wrap">
                 <div class="icon-in-button">
-                    <img src="{{ url('duolingo-clone-master/assets/images/sidebar-icon-faq.png') }}"
-                        alt="home-icon" />
+                    <img src="{{ url('duolingo-clone-master/assets/images/sidebar-icon-faq.png') }}" alt="home-icon" />
                 </div>
             </span>
         </a>

@@ -1,6 +1,6 @@
 let heartCount;
 let clickCount = 0;
-let progressValue = 0;
+// let progressValue = 0;
 let learnLang;
 let gems;
 
@@ -75,10 +75,10 @@ let correctOption = (selectedOption) => {
 }
 
 //set number of hearts in top header
-let currentHearts = () => {
-    let heartSpan = document.getElementById('heart-count')
-    heartSpan.innerText = heartCount;
-};
+// let currentHearts = () => {
+//     let heartSpan = document.getElementById('heart-count')
+//     heartSpan.innerText = heartCount;
+// };
 
 //skip button functionality in bottom row
 const skipButton = (id) => {
@@ -143,8 +143,8 @@ let checkButton = (id) => {
         if (clickCount == 0) {
             correctBottomRow();
 
-            progressValue = progressValue + 25;
-            updateProgressBar(progressValue);
+            // progressValue = progressValue + 25;
+            // updateProgressBar(progressValue);
             const audio = new Audio('../assets/audio/correct-sound.mp3');
             audio.play();
             xpCount = xpCount + 2;
@@ -157,9 +157,9 @@ let checkButton = (id) => {
         if (clickCount == 0) {
             wrongBottomRow();
 
-            progressValue = progressValue + 25;
-            updateProgressBar(progressValue);
-            document.getElementById("heart-count").textContent = heartCount - 1;
+            // progressValue = progressValue + 25;
+            // updateProgressBar(progressValue);
+            // document.getElementById("heart-count").textContent = heartCount - 1;
             heartCount = heartCount - 1;
             const audio = new Audio('../assets/audio/wrong-sound.mp3');
             audio.play();
@@ -422,12 +422,12 @@ const switchToLearn = () => {
 }
 
 //prgogress bar update functionality
-const updateProgressBar = (progressValue) => {
-    var progressBar = document.querySelector(".inner-green-bar");
-    var lightProgressBar = document.querySelector(".inner-light-green-bar");
-    lightProgressBar.style.width = progressValue + "%";
-    progressBar.style.width = progressValue + "%";
-}
+// const updateProgressBar = (progressValue) => {
+//     var progressBar = document.querySelector(".inner-green-bar");
+//     var lightProgressBar = document.querySelector(".inner-light-green-bar");
+//     lightProgressBar.style.width = progressValue + "%";
+//     progressBar.style.width = progressValue + "%";
+// }
 
 //revert exit overlay to questionaire screen
 const revertQuestionScreen = () => {
@@ -436,7 +436,7 @@ const revertQuestionScreen = () => {
     document.querySelector('.exit-overlay').style.display = 'none'
 }
 
-//heart zero shop popup 
+//heart zero shop popup
 let showShopPopup = () => {
     document.getElementById("gem-count-text").textContent = gems;
     localStorage.setItem('xpCount', xpCount + 1);
@@ -444,7 +444,7 @@ let showShopPopup = () => {
     document.querySelector('.shop-overlay').style.display = 'flex'
 }
 
-//exit alert popup 
+//exit alert popup
 
 let showAlertPopup = () => {
     document.querySelector('.exit-overlay').style.display = 'flex'

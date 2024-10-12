@@ -33,7 +33,7 @@
 .divheadin{
     font-size: 23px;
     line-height: 34px;
-    
+
 }
 
 .logInButton {
@@ -99,7 +99,6 @@
     font-family: 'din-round-bold';
     border-radius: 16px;
     border: 2px solid;
-    
     border-color: rgb(var(--color-swan));
     /* background-color: rgb(var(--color-snow-always-light)); */
     box-shadow: 0 4px 0 rgb(var(--color-snow-always-light),0.9);
@@ -112,6 +111,9 @@
     margin-left: 18px;
     min-width: 120px;
     position: static;
+}
+.heartButton:not(:disabled) {
+    cursor: pointer;
 }
 .freetrialButton {
     font-family: 'din-round-bold';
