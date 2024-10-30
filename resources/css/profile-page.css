@@ -60,7 +60,7 @@
   position: relative;
 }
 
-#profile-image {
+.user-info-div #profile-image {
   height: 128px;
   width: 128px;
   border-radius: 50%;

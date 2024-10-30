@@ -3,7 +3,7 @@
         <img src="{{ url('duolingo-clone-master/assets/svg/duolingo-green-text-only.svg') }}" alt="dolingo-text">
     </div>
     <div class="sidebar-buttons">
-        <a href="{{ route('lesson.index') }}" class="button-in-sidebar">
+        <a href="{{ route('learn') }}" wire:navigate class="button-in-sidebar">
             <span class="icon-and-text-wrap @if ($selected == 1) selected @endif">
                 <div class="icon-in-button">
                     <img src="{{ url('duolingo-clone-master/assets/svg/home-in-sidebar.svg') }}" alt="home-icon">
@@ -11,7 +11,7 @@
                 <span class="text-in-button"> Learn </span>
             </span>
         </a>
-        <a href="{{ route('leaderboard') }}" class="button-in-sidebar">
+        <a href="{{ route('leaderboard') }}" wire:navigate class="button-in-sidebar">
             <span class="icon-and-text-wrap @if ($selected == 2) selected @endif">
                 <div class="icon-in-button">
                     <img src="{{ url('duolingo-clone-master/assets/svg/badge-in-sidebar.svg') }}" alt="home-icon">
@@ -19,7 +19,7 @@
                 <span class="text-in-button"> Leaderboard </span>
             </span>
         </a>
-        <a href="{{ route('produ') }}" class="button-in-sidebar">
+        <a href="{{ route('dashboard') }}" wire:navigate class="button-in-sidebar">
             <span class="icon-and-text-wrap @if ($selected == 3) selected @endif">
                 <div class="icon-in-button">
                     <img id="profile-image" src="{{ url('duolingo-clone-master/assets/svg/profile-image-temp.svg') }}"
@@ -28,7 +28,7 @@
                 <span class="text-in-button"> Profile </span>
             </span>
         </a>
-        <a href="{{ route('shopping') }}" class="button-in-sidebar">
+        <a href="{{ route('shop') }}" wire:navigate class="button-in-sidebar">
             <span class="icon-and-text-wrap @if ($selected == 4) selected @endif">
                 <div class="icon-in-button">
                     <img src="{{ url('duolingo-clone-master/assets/svg/shop-in-sidebar.svg') }}" alt="home-icon">

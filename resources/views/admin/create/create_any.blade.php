@@ -23,6 +23,16 @@
 </head>
 
 <body>
+    <form class="input-field" action="{{ action('App\Http\Controllers\LanguageController@store') }}" method="post">
+        @csrf
+        <h2>Create <br>
+            Language
+        </h2>
+        <input class="input-field" type="text" name="name" placeholder="name">
+        <input class="input-field" type="text" name="code" placeholder="code">
+        <button class="button-div create-account-button" type="submit">Add</button>
+    </form>
+
     <form class="input-field" action="{{ action('App\Http\Controllers\LevelController@store') }}" method="post">
         @csrf
         <h2>Create <br>
@@ -62,6 +72,24 @@
         <button class="button-div create-account-button" type="submit">Add</button>
     </form>
 
-
+    <form class="input-field" action="{{ action('App\Http\Controllers\ExerciseController@store') }}" method="post">
+        <h2>Create <br>
+            Exercise
+        </h2>
+        @csrf
+        <input class="input-field" type="text" name="question" placeholder="question">
+        <input class="input-field" type="text" name="question" placeholder="question">
+        <input type="text" name="{{ 'options[]' }}" name="{{ 'option' }}" placeholder="options"
+            class="answer-choice">
+        <input class="input-field" type="text" name="answer" placeholder="answer">
+        <select class="input-field" name="theme_id" aria-placeholder="theme">
+            @foreach ($lessons as $lesson)
+                <option value="{{ $lesson->id }}">{{ $lesson->title }}</option>
+            @endforeach
+        </select>
+        <input class="input-field" type="number" name="admin_id" placeholder="admin">
+        <button class="button-div create-account-button" type="submit">Add</button>
+    </form>
+</body>
 
 </body>

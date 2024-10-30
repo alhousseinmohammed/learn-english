@@ -13,6 +13,7 @@ class SuperController extends Controller
     public function index()
     {
         //
+        return view('superduolingo');
     }
 
     /**
@@ -29,6 +30,9 @@ class SuperController extends Controller
     public function store(Request $request)
     {
         //
+        $learner = auth()->user()->learner;
+        $learner->super = true;
+        $learner->save();
     }
 
     /**

@@ -34,7 +34,6 @@ class ExerciseController extends Controller
     {
         //
         return view('create_' . $type)->with('lessons', Lesson::with('theme')->get());
-
     }
 
     /**
@@ -43,11 +42,10 @@ class ExerciseController extends Controller
     public function store(Request $request)
     {
         //
-        // dd($request);
 
 
-        if ($request->type == "listen") {
-            $text = $request->input('text');
+        if ($request->type == "dialogue") {
+            $text = $request->input(key: 'question');
             if (empty($text)) {
                 return back()->with('error', 'Text input is required');
             }
@@ -75,7 +73,6 @@ class ExerciseController extends Controller
 
                     // Return the path of the saved audio file
                     $audioUrl = asset('audios/' . $fileName);
-
                 } else {
                     return back()->with('error', 'Failed to generate speech');
                 }
@@ -84,32 +81,37 @@ class ExerciseController extends Controller
             }
         }
 
-//
+        //
 
-        if($request->type == 'picture' && $request->file('image')) {
+        if ($request->type == 'picture' && $request->file('image')) {
             $file = $request->file('image');
             $fileName = date('YmdHi') . $file->getClientOriginalName();
             $file->move(public_path('images'), $fileName);
         }
 
         $lesson = Lesson::with('exercises')->find($request->lesson_id);
-$lastOrder = $lesson ? $lesson->exercises->max('order') : null;
+        $lastOrder = $lesson ? $lesson->exercises->max('order') : null;
 
         $exercise = new Exercise();
-        $exercise->question = $request->question;
+        $exercise->setTranslations("question", ["en" => $request->question]);
         $exercise->answer = $request->answer;
+        // dd($request->answer);
         $exercise->lesson_id = $request->lesson_id;
         $exercise->admin_id = $request->admin_id;
         $exercise->type = $request->type;
         $exercise->order = $lastOrder + 1;
-        if (isset($fileName))
-        {$exercise->image = $fileName;}
-        if($request->has('options')) {
-
-            // $exercise->option
-            $options = json_encode($request->options);
-            $exercise->options = $options;
+        if (isset($fileName)) {
+            $exercise->image = $fileName;
         }
+        if ($request->has('options')) {
+            // $exercise->option
+            $options = $request->options;
+            $exercise->setTranslations('options', [
+                'en' => $options, // Options in Spanish
+            ]);
+        }
+
+
 
 
         $exercise->save();
@@ -124,7 +126,7 @@ $lastOrder = $lesson ? $lesson->exercises->max('order') : null;
     {
         //
         $exercise = Exercise::find($id);
-        return view($exercise->type)->with ('exercise', $exercise);
+        return view($exercise->type)->with('exercise', $exercise);
     }
     public function showNext($id)
     {
@@ -134,11 +136,11 @@ $lastOrder = $lesson ? $lesson->exercises->max('order') : null;
         $next = Exercise::where('order', $nextOrder)->where('lesson_id', $exercise->lesson_id)->first();
 
 
-if (!$next) {
+        if (!$next) {
 
-        // $response = Http::post(route('progress.store'), [
-        //     'lesson_id' => $exercise->lesson_id
-        // ]);
+            // $response = Http::post(route('progress.store'), [
+            //     'lesson_id' => $exercise->lesson_id
+            // ]);
             $learner = auth()->user()->learner;
             $today = Carbon::now()->startOfDay();
             $lastProgress = $learner->progress()->latest('progress.created_at')->first();
@@ -153,12 +155,10 @@ if (!$next) {
             $progress = new ProgressController();
             $progress->store($request);
             return redirect()->action('App\Http\Controllers\LessonController@index');
+        }
+        return redirect()->action('App\Http\Controllers\ExerciseController@show', $next->id);
 
-
-}
-        return redirect()->action('App\Http\Controllers\ExerciseController@show',$next->id);
-
-        return view($next->type)->with ('exercise', $next);
+        return view($next->type)->with('exercise', $next);
     }
 
     /**
@@ -186,7 +186,8 @@ if (!$next) {
         //
     }
 
-    public function skip($id) {
+    public function skip($id)
+    {
         $learner = auth()->user()->learner;
 
         $exercise = Exercise::find($id);
@@ -198,29 +199,26 @@ if (!$next) {
                 $learner->current_hearts -= 1;
                 $learner->save();
             }
-            if ($learner->current_hearts > 0)
+            if ($learner->current_hearts > 0) {
+                if (!$next) {
 
-                {
-                    if (!$next) {
+                    $request = new Request(["lesson_id" => $exercise->lesson_id]);
+                    $progress = new ProgressController();
+                    return $progress->store($request);
+                }
 
-            $request = new Request(["lesson_id" => $exercise->lesson_id]);
-            $progress = new ProgressController();
-            return $progress->store($request);
-}
-
-                    return redirect()->action('App\Http\Controllers\ExerciseController@show',$next->id);}
-            else
+                return redirect()->action('App\Http\Controllers\ExerciseController@show', $next->id);
+            } else
                 return redirect()->action('App\Http\Controllers\LessonController@index');
+        } else {
+            if (!$next) {
 
+                $request = new Request(["lesson_id" => $exercise->lesson_id]);
+                $progress = new ProgressController();
+                return $progress->store($request);
+            }
 
-        } else                                 {
-                    if (!$next) {
-
-            $request = new Request(["lesson_id" => $exercise->lesson_id]);
-            $progress = new ProgressController();
-            return $progress->store($request);
-}
-
-                    return redirect()->action('App\Http\Controllers\ExerciseController@show',$next->id);}
+            return redirect()->action('App\Http\Controllers\ExerciseController@show', $next->id);
+        }
     }
 }

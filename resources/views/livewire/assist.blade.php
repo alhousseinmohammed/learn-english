@@ -1,7 +1,7 @@
 <div class="challenge-assist">
     <div class="challenge-section">
         <div class="challenge-header">
-            <h1><span>Select the correct meaning</span></h1>
+            <h1><span>{{ __('assist.select') }}</span></h1>
             <div class="assist-content">
                 <div class="assist-content-question">
                     <div class="assist-question-row">
@@ -360,15 +360,14 @@
                         </div>
                     </div>
                 </div>
-                <div id="assist-content-options">
-                    <div>
-                    </div>
-                    @foreach (json_decode($exercise->options) as $option)
+                <div id="assist-content-options" x-data="{ correct: @entangle('correct') }">
+                    @foreach ($exercise->getTranslation('options', 'en') as $option)
                         @php
                             $answerNumber++;
                         @endphp
                         @if ($answerNumber <= 3)
-                            <div class="outer-options-div" id="outer-options-div-1">
+                            <div class="outer-options-div" :class="correct == true ? 'correct' : ''"
+                                id="outer-options-div-1">
                                 <label class="option-div" id="1">
                                     <input type="radio" wire:model="answered" wire:change="updateAnswered"
                                         id="{{ $answerNumber }}" value={{ $option }} class="options"

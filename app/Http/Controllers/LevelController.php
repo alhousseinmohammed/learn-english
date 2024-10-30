@@ -13,6 +13,8 @@ class LevelController extends Controller
     public function index()
     {
         //
+        $levels = Level::all();
+        return view('admin.index.levels')->with('levels', $levels);
     }
 
     /**
@@ -30,7 +32,7 @@ class LevelController extends Controller
     public function store(Request $request)
     {
         //
-                $level = new Level();
+        $level = new Level();
         $level->name = $request->name;
         $level->save();
     }
@@ -65,5 +67,7 @@ class LevelController extends Controller
     public function destroy(Level $level)
     {
         //
+        $level->delete();
+        redirect()->back();
     }
 }

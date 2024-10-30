@@ -45,14 +45,7 @@ class LearnerController extends Controller
                 $learner->current_hearts -= 1;
                 $learner->save();
             }
-            // if ($learner->current_hearts > 0)
-            //     return redirect()->action('App\Http\Controllers\ExerciseController@show',$exerciseId);
-            // else
-            //     return redirect()->action('App\Http\Controllers\LessonController@index');
-
-
-        } else                 return redirect()->action('App\Http\Controllers\ExerciseController@show',$exerciseId);
-
+        }
     }
 
     /**
@@ -61,6 +54,7 @@ class LearnerController extends Controller
     public function edit(Learner $learner)
     {
         //
+        return view('friend')->with('learner', $learner);
     }
 
     /**
@@ -79,15 +73,17 @@ class LearnerController extends Controller
         //
     }
 
-    public function earnGems (int $gems_earned) {
-            $learner = auth()->user()->learner;
+    public function earnGems(int $gems_earned)
+    {
+        $learner = auth()->user()->learner;
         $learner->current_gems += $gems_earned;
         $learner->save();
         // return redirect()->action('App\Http\Controllers\LessonController@index');
     }
 
-    public function payGems (int $gems_paid) {
-                    $learner = auth()->user()->learner;
+    public function payGems(int $gems_paid)
+    {
+        $learner = auth()->user()->learner;
         $learner->updateLeague();
         if ($learner->current_gems > 0 & $learner->current_gems >= $gems_paid) {
             $learner->current_gems -= $gems_paid;
@@ -96,12 +92,14 @@ class LearnerController extends Controller
         }
     }
 
-    public function super () {
+    public function super()
+    {
         auth()->user()->learner->super = !auth()->user()->learner->super;
     }
 
-    public function progress($xp) {
-                    $learner = auth()->user()->learner;
+    public function progress($xp)
+    {
+        $learner = auth()->user()->learner;
         $learner->experience_points += $xp;
         $learner->save();
         $learner->updateLeague();

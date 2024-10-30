@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -23,19 +24,39 @@ class ProfileController extends Controller
 
     /**
      * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+     */ public function update(Request $request)
     {
-        $request->user()->fill($request->validated());
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
+            'photo' => ['nullable', 'image', 'max:2048'], // 2MB limit
+        ]);
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user = $request->user();
+
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+
+            // Generate a unique filename
+            $fileName = date('YmdHi') . '_' . $file->getClientOriginalName();
+
+            // Move the file to public/photos
+            $file->move(public_path('photos'), $fileName);
+
+            // Store the filename in the user object (not in request)
+            $user->photo = $fileName;
         }
 
-        $request->user()->save();
+        // Update the user's name and email
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        // Save the user model with the new data (including photo if uploaded)
+        $user->save();
+
+        return back()->with('status', 'Profile updated!');
     }
+
 
     /**
      * Delete the user's account.

@@ -68,5 +68,6 @@ class ThemeController extends Controller
     public function destroy(Theme $theme)
     {
         //
+        $theme->delete();
     }
 }

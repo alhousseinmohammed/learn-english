@@ -21,6 +21,7 @@
             position: normal;
         }
     </style>
+    @livewireStyles()
 </head>
 
 <body cz-shortcut-listen="true">
@@ -86,7 +87,7 @@
 
                                 <div class="medaldiv">
                                     <img class="p9XXu"
-                                        src="{{ url('duolingo-clone-master/assets/svg/' . Auth::user()->learner->league->image) }}">
+                                        src="{{ url('duolingo-clone-master/assets/svg/' . Auth::user()->learner->league?->image) }}">
                                 </div>
                                 <img class="_14I3k"
                                     src="https://d35aaqx5ub95lt.cloudfront.net/images/leagues/1b4fb092de75e4ecefd8e92f10b4ddd2.svg">
@@ -157,11 +158,13 @@
                                 @endif
 
                                 <div class="divforimg">
-                                    <img class="image" src="../assets/svg/profile-image-temp.svg">
-                                    <div class="divforbubble">
-                                        <img class="bubble" id="bubble"
-                                            @if ($learner->status) src={{ $learner->status->image }} @else src="//d35aaqx5ub95lt.cloudfront.net/images/leagues/a35f1db4398fd29e66f1abc33a0d11a2.svg" @endif />
-                                    </div>
+                                    <img @if (Auth::user()->photo) src="{{ url('photos/' . $learner->user->photo) }}" @endif
+                                        alt="" class="image" id="profile-image" />
+                                    @if ($learner->status)
+                                        <div class="divforbubble">
+                                            <img class="bubble" id="bubble" src={{ $learner->status->image }} />
+                                        </div>
+                                    @endif
                                 </div>
                                 <div class="divforname">
                                     <span class="spanforname">{{ $learner->user->name }}</span>
@@ -266,6 +269,7 @@
 
 
         </div>
+        @livewireScripts()
 </body>
 
 </html>

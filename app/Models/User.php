@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -21,6 +22,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'photo',
+        'role',
     ];
 
     /**
@@ -46,9 +49,45 @@ class User extends Authenticatable
         return $this->hasOne(Learner::class);
     }
 
-        public function admin()
+    public function admin()
     {
         return $this->hasOne(Admin::class);
     }
 
+    // public function following(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(User::class, 'follows', 'follower_id', 'followed_id')
+    //         ->withTimestamps();
+    // }
+
+    // public function followers(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(User::class, 'follows', 'followed_id', 'follower_id')
+    //                 ->withTimestamps();
+    // }
+
+    // app/Models/User.php
+
+    public function following(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            User::class,
+            'follows',
+            'follower_id',
+            'followed_id'
+        );
+    }
+
+    /**
+     * Users who are following the current user.
+     */
+    public function followers(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            User::class,
+            'follows',
+            'followed_id',
+            'follower_id'
+        )->using(Follow::class)->withTimestamps();
+    }
 }

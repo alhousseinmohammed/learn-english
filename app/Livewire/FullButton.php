@@ -24,6 +24,7 @@ class FullButton extends Component
     public function payFill () {
         $this->payGems();
         $this->fillHearts();
+        $this->dispatch('heartsFilled');
     }
     public function render()
     {

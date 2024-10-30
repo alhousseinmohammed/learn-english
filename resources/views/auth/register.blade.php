@@ -22,9 +22,9 @@
             </div>
 
             <div class="login-button-container">
-                <button class="login-button button-div" id="login-button">
+                <a href="{{ route('login') }}" class="login-button button-div" id="login-button">
                     LOGIN
-                </button>
+                </a>
             </div>
 
             <!-- Registration Form -->
@@ -34,10 +34,10 @@
                     <h1 class="create-profile-heading">Create your profile</h1>
                     <div class="input-fields-div">
                         <!-- Age Field (Optional) -->
-                        <div class="field-one">
+                        {{-- <div class="field-one">
                             <input class="input-field" id="age-input" type="text" placeholder="Age" />
                             <div class="error-message" id="age-error-message"></div>
-                        </div>
+                        </div> --}}
 
                         <!-- Name Field -->
                         <div class="field-one">

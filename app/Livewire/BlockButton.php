@@ -9,10 +9,12 @@ class BlockButton extends Component
     public $id;
     public $optionValue;
     public $answerValue;
-    public function mount($id) {
+    public function mount($id)
+    {
         $this->id = $id;
     }
-    public function updateOptinValue() {
+    public function updateOptinValue()
+    {
 
         $this->answerValue = $this->optionValue;
     }

@@ -292,7 +292,7 @@
         <h1>اختر المعنى الصحيح</h1>
         <h3>{{ $exercise->question }}</h3>
 
-        @foreach (json_decode($exercise->options) as $option)
+        @foreach (json_decode($exercise->getTranslation('options', 'en')) as $option)
             @php
                 $answerNumber++;
             @endphp

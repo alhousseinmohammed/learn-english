@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ App::getLocale() }}" dir="{{ App::getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 
 <head>
     <meta charset="UTF-8" />
@@ -39,23 +39,22 @@
                             </div>
                         </div>
                         <button class="logInButton" id="superLink" onclick="loginButtonAnimation()">
-                            <span>Buy Super for ₹199</span>
+                            <a>Buy Super for ₹199</a>
                         </button>
                         <img class="super"
                             src="https://d35aaqx5ub95lt.cloudfront.net/images/super/2e50c3e8358914df5285dc8cf45d0b4c.svg"
                             alt="" />
                     </div>
-                    <div class="hearthead">Hearts</div>
+                    <div class="hearthead">{{ __('profile.hearts') }}</div>
                     <ul class="shoplist">
                         <li class="divinShopping">
                             <img class="heart"
                                 src="https://d35aaqx5ub95lt.cloudfront.net/images/hearts/547ffcf0e6256af421ad1a32c26b8f1a.svg"
                                 alt="" />
                             @livewire('FullButton')
-                            <div class="divinlist">Refill Hearts</div>
+                            <div class="divinlist">{{ __('shop.refill') }}</div>
                             <p class="parainlist">
-                                Get full hearts so you can worry less about
-                                making mistakes in a lesson
+                                {{ __('shop.get') }}
                             </p>
                         </li>
                         <li class="divinShopping">
@@ -63,11 +62,12 @@
                                 src="https://d35aaqx5ub95lt.cloudfront.net/images/hearts/4f3842c690acf9bf0d4b06e6ab2fffcf.svg"
                                 alt="" />
                             <button class="freetrialButton" onclick="window.location.href = './superduolingo.html';">
-                                <span>Buy Super</span>
+                                <a href="{{ route('super.index') }}"
+                                    style="text-decoration: none; color: inherit;">{{ __('shop.super') }}</a>
                             </button>
-                            <div class="divinlist">Unlimited Hearts</div>
+                            <div class="divinlist">{{ __('shop.unlimited') }}</div>
                             <p class="parainlist">
-                                Never run out of hearts with Super!
+                                {{ __('shop.never') }}
                             </p>
                         </li>
                     </ul>

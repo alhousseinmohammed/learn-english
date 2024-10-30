@@ -1,7 +1,7 @@
                             <div class="challenge-dialogue">
                                 <div class="challenge-section">
                                     <div class="challenge-header">
-                                        <h1><span>Complete the chat</span></h1>
+                                        <h1><span>{{ __('dialogue.complete') }}</span></h1>
                                         <div class="dialogue-content">
                                             <div class="dialogue-content-question">
                                                 <div class="dialogue-question-row">
@@ -127,11 +127,11 @@
                                                             prends
                                                             un dessert.</span></div>
                                                 </div> --}}
-                                                @foreach (json_decode($exercise->options) as $option)
+                                                @foreach ($exercise->getTranslation('options', 'en') as $option)
                                                     @php
                                                         $answerNumber++;
                                                     @endphp
-                                                    @if ($answerNumber <= 3)
+                                                    @if ($answerNumber <= 2)
                                                         <div class="outer-options-div" id="outer-options-div-2">
                                                             <label class="option-div" for="{{ $answerNumber }}">
                                                                 <input type="radio" wire:model="answered"

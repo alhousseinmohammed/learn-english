@@ -12,11 +12,32 @@
         <script src="{{ url('duolingo-clone-master/js/questionaire.js') }}"></script>
 
         <title>Duolingo</title>
-        <link rel="icon" href="{{ url('duolingo-clone-master/assets/images/favicon.ico') }}">
+        <link rel="icon" href="{{ url('duolingo-clone-master/assets/audio/correct-sound.mp3') }}">
 
     </head>
 
-    <body cz-shortcut-listen="true">
+    <body cz-shortcut-listen="true" lang="en" x-data="{
+        correct: @entangle('correct'),
+        wrong: @entangle('wrong'),
+        playSound(type) {
+            const audio = new Audio(`/duolingo-clone-master/assets/audio/${type}.mp3`);
+            audio.play();
+        },
+        watchStates() {
+            this.$watch('correct', value => {
+                if (value) {
+                    console.log('Correct:', value);
+                    this.playSound('correct-sound');
+                }
+            });
+            this.$watch('wrong', value => {
+                if (value) {
+                    console.log('Wrong:', value);
+                    this.playSound('wrong-sound');
+                }
+            });
+        }
+    }" x-init="watchStates()">
         <div class="question-overlay-page">
             <div class="question-page-sections">
                 @livewire('header', ['exercise_id' => $exercise->id])
@@ -50,13 +71,13 @@
                         :style="correct ? 'background-color: #d7ffb8;' : (wrong ? 'background-color: #ffdfe0;' :
                             'background-color: rgb(255, 255, 255;)')">
                         <div class="bottom-buttons">
-                            <div class="skip-button">
-                                <button x-show="!correct && !wrong" class="button-div skip-button-inner"
+                            <div x-data="{ skipText: '{{ __('questionaire.skip') }}' }" class="skip-button">
+                                <button x-cloak x-show ="!correct && !wrong" class="button-div skip-button-inner"
                                     id="skip-button" @click="wrong = true" {{-- onclick="skipButton(this.id)" --}}>
-                                    <span id="skip-span">SKIP</span>
+                                    <span id="skip-span" x-text='skipText'></span>
                                 </button>
                             </div>
-                            <div class="correct-left" x-show="correct">
+                            <div class="correct-left" x-cloak x-show ="correct">
                                 <div class="correct-content">
                                     <div class="correct-tick">
                                         <img class="green-tick"
@@ -67,7 +88,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="correct-left" id="wrong-left" x-show="wrong">
+                            <div class="correct-left" id="wrong-left" x-cloak x-show ="wrong">
                                 <div class="correct-content">
                                     <div class="correct-tick">
                                         <img class="green-tick"
@@ -79,17 +100,28 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="check-button check-button-outer-active" id="check-button-div"
+                            <div x-data="{ checkText: '{{ __('questionaire.check') }}', continueText: '{{ __('questionaire.continue') }}' }" class="check-button check-button-outer-active"
+                                id="check-button-div"
                                 :style="wrong ? 'box-shadow: 0 4px 0#ea2b2b;' : 'box-shadow: 0 4px 0#58a700;'">
                                 <button class="button-div check-button-inner-active" id="check-button"
                                     :style="wrong ? 'background-color: #ff4b4b;' : 'background-color: #58cc02;'"
                                     wire:click="check"
-                                    @click=" correct || wrong ? (correct = false, wrong=false) : (correct = true, wrong=false) "
+                                    @click=" correct || wrong ? $wire.call('continue') : $wire.call('check') "
                                     {{-- onclick="checkButton(this.id)" --}}>
-                                    <span id="continue-button" x-text=" correct || wrong ? 'Continue' : 'CHECK'">CHECK
+                                    <span id="continue-button"
+                                        x-text=" correct || wrong ? continueText : checkText">CHECK
                                         {{ $exercise->id }}</span>
                                 </button>
                             </div>
+                            :style="wrong ? 'box-shadow: 0 4px 0#ea2b2b;' : 'box-shadow: 0 4px 0#58a700;'">
+                            <button class="button-div check-button-inner-active" id="check-button"
+                                :style="wrong ? 'background-color: #ff4b4b;' : 'background-color: #58cc02;'"
+                                wire:click="check"
+                                @click=" correct || wrong ? $wire.call('continue') : $wire.call('check') "
+                                {{-- onclick="checkButton(this.id)" --}}>
+                                <span id="continue-button" x-text=" correct || wrong ? continueText : 'CHECK'">CHECK
+                                    {{ $exercise->id }}</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -111,14 +143,15 @@
                                 <span id="keep-learning">KEEP LEARNING</span>
                             </button>
                         </div>
-                        <button class="end-question-session" onclick="exitToLearn()">
+                        <a class="end-question-session"
+                            href="{{ action('App\Http\Controllers\LessonController@index') }}">
                             <span>END SESSION</span>
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="shop-overlay" style="display: none">
+        <div class="shop-overlay" x-data="{ hearts: @entangle('hearts') }" x-cloak x-show ="hearts == 0 && !(wrong || correct) ">
             <div class="exit-box">
                 <div class="exit-box-contents">
                     <div class="gem-head-popup">
@@ -132,12 +165,12 @@
                         hearts.</span>
                     <div class="keep-learning-button-outer-active" id="check-button-div">
                         <button class="button-div keep-learning-button" id="keep-learning-button" onclick="goToShop()">
-                            <span id="keep-learning">GO TO SHOP</span>
+                            <a href="{{ route('leaderboard') }}" id="keep-learning">GO TO SHOP</a>
                         </button>
                     </div>
-                    <button class="end-question-session" onclick="exitToLearn()">
+                    <a class="end-question-session" href="{{ action('App\Http\Controllers\LessonController@index') }}">
                         <span>END SESSION</span>
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>

@@ -5,7 +5,7 @@
         </div>
         <div class="select-challenge-options">
             <div class="select-options">
-                @foreach (json_decode($exercise->options) as $option)
+                @foreach ($exercise->getTranslation('options', 'en') as $option)
                     @php
                         $answerNumber++;
                     @endphp

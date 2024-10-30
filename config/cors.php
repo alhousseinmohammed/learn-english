@@ -15,20 +15,13 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
-
-    'allowed_methods' => ['*'],
-
-    'allowed_origins' => ['*'],
-
+    'paths' => ['api/*'],
+    'allowed_methods' => ['*'], // Allow all HTTP methods
+    'allowed_origins' => ['chrome-extension://*'], // Allow your Chrome extension
     'allowed_origins_patterns' => [],
-
-    'allowed_headers' => ['*'],
-
+    'allowed_headers' => ['Content-Type', 'X-Requested-With', 'Authorization'],
     'exposed_headers' => [],
-
     'max_age' => 0,
-
     'supports_credentials' => false,
 
 ];

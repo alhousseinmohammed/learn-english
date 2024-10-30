@@ -635,6 +635,10 @@
 .select-outer-options-div-correct {
     box-shadow: 0 2.5px 0#a5ed6e
 }
+.outer-options-div.correct:has(input:checked),
+.select-outer-options-div.correct:has(input:checked) {
+    box-shadow: 0 2.5px 0#a5ed6e !important
+}
 
 .outer-options-div:hover:not(:has(input:checked)) {
     filter: brightness(.95)
@@ -716,6 +720,13 @@
     height: 32px
 }
 
+.correct .option-div.option-div:has(input:checked),
+.correct .select-option-div {
+    border: 2px solid #a5ed6e !important;
+    background-color: #d7ffb8 !important;
+    height: 32px !important
+}
+
 .select-option-div-correct {
     flex-direction: column;
     height: 200px
@@ -756,6 +767,11 @@
     color: #58a700
 }
 
+.correct input:checked~.option-no {
+    border: 2px solid #a5ed6e !important;
+    color: #58a700 !important
+}
+
 .option-name,
 .option-name-correct,
 .option-name-selected {
@@ -774,12 +790,16 @@
 }
 
 .option-name-correct,
-input:checked+.option-name-selected {
+input:checked~.option-name {
     color: #1899d6;
 }
 
 .option-name-correct {
     color: #58a700
+}
+
+.correct input:checked~.option-name {
+    color: #58a700 !important
 }
 
 .bottom-row-question-page-sections {
@@ -997,7 +1017,7 @@ input:checked+.option-name-selected {
         min-height: 140px;
         padding: 16px 0;
         /* position: relative; */
-        top: 15px
+        /* top: 5px */
     }
 
     .correct-content {

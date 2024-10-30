@@ -1,4 +1,4 @@
-<html lang="en">
+<html lang="{{ App::getLocale() }}" dir="{{ App::getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 
 <head>
     <meta charset="UTF-8" />
@@ -9,10 +9,11 @@
     <link rel="stylesheet" href="{{ url('duolingo-clone-master/css/main.css') }}" />
     <link rel="stylesheet" href="{{ url('duolingo-clone-master/css/learn.css') }}" />
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <!-- <script src="{{ url('duolingo-clone-master/js/learn.js') }}"></script> -->
+    <script src="{{ url('duolingo-clone-master/js/learn.js') }}"></script>
     <script type="module" src="{{ url('duolingo-clone-master/js/profile-page.js') }}"></script>
     <script src="{{ url('duolingo-clone-master/js/profile-page-values.js') }}"></script>
-    {{-- <script type="module" src="{{ url('duolingo-clone-master/js/firebaseLogout.js') }}"></script> --}}
+    <script type="module" src="{{ url('duolingo-clone-master/js/firebaseLogout.js') }}"></script>
+    @livewireStyles()
 </head>
 
 <body>
@@ -38,13 +39,13 @@
                             <div class="join-date-container">
                                 <img src="{{ url('duolingo-clone-master/assets/svg/join-date.svg') }}"
                                     class="date-image" alt="" />
-                                <div class="join-date" id="join-date">Joined at
-                                    {{ Auth::user()->created_at->format('F Y') }}</div>
+                                <div class="join-date" id="join-date">
+                                    {{ __('profile.join') . Auth::user()->created_at->format('F Y') }}</div>
                             </div>
                         </div>
                         <div class="profile-image-div">
                             <span class=""></span>
-                            <img @if (Auth::user()->photo) src="{{ url('photos' . Auth::user()->photo) }}" @endif
+                            <img @if (Auth::user()->photo) src="{{ url('photos/' . Auth::user()->photo) }}" @endif
                                 alt="" id="profile-image" />
                             <div class="edit-account-div">
                                 <a href="{{ route('profile.edit') }}">
@@ -69,7 +70,7 @@
                                         <h4 class="statistics-value gem-text" id="streak-value">
                                             {{ Auth::user()->learner->current_gems }}
                                         </h4>
-                                        <div class="statistics-text">Gems</div>
+                                        <div class="statistics-text">{{ __('profile.gems') }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -81,17 +82,19 @@
                                     <div class="statistics-section-one-content">
                                         <h4 class="statistics-value" id="xp-value">
                                             {{ Auth::user()->learner->experience_points }}</h4>
-                                        <div class="statistics-text">Total XP</div>
+                                        <div class="statistics-text">{{ __('profile.xp') }}</div>
                                     </div>
                                 </div>
                             </div>
                             <div>
                                 <div class="statistics-section-one">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/' . Auth::user()->learner->league->image) }}"
+                                    <img src="{{ url('duolingo-clone-master/assets/svg/' . (Auth::user()->learner->league?->image ?? 'locked-button-grey')) }}"
                                         class="statistics-streak-icon" alt="" />
                                     <div class="statistics-section-one-content">
-                                        <h4 class="statistics-value">{{ Auth::user()->learner->league->name }}</h4>
-                                        <div class="statistics-text">Current League</div>
+                                        <h4 class="statistics-value">
+                                            {{ Auth::user()->learner->league->name ?? 'No league' }}
+                                        </h4>
+                                        <div class="statistics-text">{{ __('profile.league') }}</div>
                                     </div>
                                 </div>
 
@@ -102,7 +105,7 @@
                                         class="statistics-streak-icon" alt="" />
                                     <div class="statistics-section-one-content">
                                         <h4 class="statistics-value">0</h4>
-                                        <div class="statistics-text">Top 3 Finishes</div>
+                                        <div class="statistics-text">{{ __('profile.top') }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -162,6 +165,7 @@
             </span>
         </a>
     </div> --}}
+    @livewireScripts()
 </body>
 
 </html>

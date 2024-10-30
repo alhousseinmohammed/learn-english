@@ -5,7 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url('duolingo-clone-master/css/questionaire.css') }}">
+    <link rel="stylesheet" href="{{ url('duolingo-clone-master/css/main.css') }}">
+    <script src="{{ url('duolingo-clone-master/js/questionaire.js') }}"></script>
+
+    <link rel="stylesheet" href="{{ url('duolingo-clone-master/css/questionaire.css') }}">
+    <link rel="stylesheet" href="{{ url('duolingo-clone-master/css/main.css') }}">
+
+    <link rel="icon" href="{{ url('duolingo-clone-master/assets/images/favicon.ico') }}" />
+
+    <!-- Custom CSS Files -->
+    <link rel="stylesheet" href="{{ url('duolingo-clone-master/css/loginpage.css') }}" />
+    <link rel="stylesheet" href="{{ url('duolingo-clone-master/css/signup.css') }}" />
+    <link rel="stylesheet" href="{{ url('duolingo-clone-master/css/main.css') }}" />
+
+    <title>Duolingo</title>
+    <link rel="icon" href="{{ url('duolingo-clone-master/assets/images/favicon.ico') }}">
 
     <style>
         body {
@@ -256,26 +273,31 @@
             text-align: right;
         }
     </style>
+    @livewireStyles()
 </head>
 
 
 <body onkeypress="choose(event)">
     {{-- @livewire('headere') --}}
-    <form action="{{ action('App\Http\Controllers\ExerciseController@store') }}" method="post" class="button-container"
-        onkeypress="choose(event)">
+    <form action="{{ action('App\Http\Controllers\ExerciseController@store') }}" method="post"
+        class="button-container" onkeypress="choose(event)">
         @csrf
         <h1>اختر المعنى الصحيح</h1>
-        <input type="text" name="question">
+        <input type="text" name="question" class="input-field" placeholder="question">
         @livewire('block-button', ['id' => 1])
         @livewire('block-button', ['id' => 2])
         @livewire('block-button', ['id' => 3])
         @livewire('block-button', ['id' => 4])
-        <input hidden type="text" name="type" value="choose">
-        <input type="number" name="admin_id" placeholder="admin">
-        <select name="lesson_id" id="">
-            @foreach ($lessons as $lesson)
-                <option value="{{ $lesson->id }}">{{ $lesson->title }}</option>
-            @endforeach
+        <div style="display: flex; gap:1vw">
+            <input class="input-field" hidden type="text" name="type" placeholder="type">
+            <input class="input-field" type="number" name="admin_id" placeholder="admin">
+            <input type="file" name="image" class="input-field" accept="audio/*">
+
+            <select class="input-field" name="lesson_id" id="">
+        </div>
+        @foreach ($lessons as $lesson)
+            <option value="{{ $lesson->id }}">{{ $lesson->title }}</option>
+        @endforeach
         </select>
         <footer>
             <bitton class="skip_button">إلغاء</bitton>
@@ -290,6 +312,7 @@
             option.checked = true;
         }
     </script>
+    @livewireScripts()
 </body>
 
 </html>

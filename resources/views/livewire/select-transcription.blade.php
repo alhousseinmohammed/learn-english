@@ -56,7 +56,7 @@
                                 </g>
                             </svg></span></button></div>
                 <div id="transcription-options">
-                    @foreach (json_decode($exercise->options) as $option)
+                    @foreach (json_decode($exercise->getTranslation('options', 'en')) as $option)
                         @php
                             $answerNumber++;
                         @endphp

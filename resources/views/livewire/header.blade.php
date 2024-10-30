@@ -7,7 +7,7 @@
         <a onclick="showAlertPopup()" class="close-button"><img
                 src="{{ url('duolingo-clone-master/assets/svg/close-button.svg') }}" alt="Close"></a>
         <div class="progress-bar-container">
-            <div class="inner-green-bar" style="width:{{ ($exercise->order / $sum) * 100 }}%;">
+            <div class="inner-green-bar" style="width:{{ $progress * 100 }}%;">
                 <div class="inner-light-green-bar" style="width: 75%;"></div>
             </div>
         </div>

@@ -7,15 +7,12 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     @livewireStyles()
-    {{-- @livewireScriptConfig() --}}
-
 </head>
 
 <body>
     @livewire('exerciseTry', ['lesson' => $lesson])
 
     @livewireScripts()
-
 </body>
 
 </html>

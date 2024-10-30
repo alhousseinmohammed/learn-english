@@ -29,16 +29,16 @@
             </div>
 
             <div class="login-button-container">
-                <button class="login-button button-div" id="login-button" onclick="signupButtonAnimation()">
+                <a href="register" class="login-button button-div" id="login-button" onclick="signupButtonAnimation()">
                     SIGN UP
-                </button>
+                </a>
             </div>
 
             <form method="POST" action="{{ route('login') }}" class="signup-section-main" id="main-form">
                 @csrf
                 <div class="signup-information-div">
                     <h1 class="create-profile-heading">Log in</h1>
-
+                    <input type="checkbox" name="isad" id="">
                     <div class="input-fields-div">
                         <!-- Email Input -->
                         <div class="field-one">
@@ -54,7 +54,10 @@
                         <div class="field-one password-div">
                             <input class="input-field password-input" id="password-input" type="password"
                                 name="password" required autocomplete="current-password" placeholder="Password" />
-                            <a class="forgot" id="forgot-password">Forgot?</a>
+                            {{-- <a class="forgot" id="forgot-password">Forgot?</a> --}}
+                            @if (Route::has('password.request'))
+                                <a class="forgot" href="{{ route('password.request') }}">Forgot?</a>
+                            @endif
                             @error('password')
                                 <div class="error-message">{{ $message }}</div>
                             @enderror
@@ -63,12 +66,12 @@
 
                     <div class="flex items-center justify-end mt-4">
                         <!-- Forgot Password Link -->
-                        @if (Route::has('password.request'))
+                        {{-- @if (Route::has('password.request'))
                             <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
                                 href="{{ route('password.request') }}">
                                 {{ __('Forgot your password?') }}
                             </a>
-                        @endif
+                        @endif --}}
 
                         <!-- Login Button -->
                         <div class="create-account-button-container">

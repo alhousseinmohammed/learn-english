@@ -134,7 +134,7 @@
   line-height: 25px;
 }
 
-.try-super-box button {
+.try-super-box button:not(.show-more) {
   width: 100%;
   position: relative;
   width: 100%;

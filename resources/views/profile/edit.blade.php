@@ -177,6 +177,12 @@
                                         </div>
                                     </td>
                                 </tr>
+                                {{-- <tr>
+                                    <div>
+                                        <label for="photo">Upload Photo</label>
+                                        <input type="file" name="photo" id="photo" accept="image/*">
+                                    </div>
+                                </tr> --}}
 
                                 <tr>
                                     <td class="edit-left-side-content">

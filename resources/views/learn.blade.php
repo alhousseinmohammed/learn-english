@@ -1,4 +1,4 @@
-<html lang="en">
+<html lang="{{ App::getLocale() }}" dir="{{ App::getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 
 <head>
     <meta charset="UTF-8">
@@ -7,6 +7,8 @@
     <link rel="icon" href="{{ url('duolingo-clone-master/assets/images/favicon.ico') }}">
     <link rel="stylesheet" href="{{ url('duolingo-clone-master/css/learn.css') }}">
     <link rel="stylesheet" href="{{ url('duolingo-clone-master/css/main.css') }}">
+    <link rel="stylesheet" href="{{ url('duolingo-clone-master/css/questionaire.css') }}">
+    @livewireStyles()
 </head>
 
 <body cz-shortcut-listen="true">
@@ -22,6 +24,9 @@
     @php
         $period = true;
     @endphp
+    @php
+        $chosen = false;
+    @endphp
 
 
 
@@ -35,43 +40,7 @@
             <!----------------------------------- Scrollable area showing units ------------------------------------------------>
             <div class="scrollable-lesson-div active" onclick="closeAllOpenDialogBoxes()">
                 <div class="sticky">
-                    {{-- <div class="right-sidebar-header top-stats-mobile">
-                        <a href="" class="button-in-sidebar">
-                            <span class="icon-and-text-wrap">
-                                <div class="icon-in-button">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/country-flags/es-flag.svg') }}"
-                                        alt="home-icon" class="country-flag">
-                                </div>
-                            </span>
-                        </a>
-                        <a href="" class="button-in-sidebar">
-                            <span class="icon-and-text-wrap">
-                                <div class="icon-in-button">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/lesson-xp.svg') }}"
-                                        alt="home-icon" class="profile">
-                                </div>
-                                <span class="text-in-button fire-text">90</span>
-                            </span>
-                        </a>
-                        <a href="" class="button-in-sidebar">
-                            <span class="icon-and-text-wrap">
-                                <div class="icon-in-button">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/gems-icon.svg') }}"
-                                        alt="home-icon" class="profile">
-                                </div>
-                                <span class="text-in-button gem-text">500</span>
-                            </span>
-                        </a>
-                        <a href="" class="button-in-sidebar">
-                            <span class="icon-and-text-wrap">
-                                <div class="icon-in-button">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/heart-filled-red.svg') }}"
-                                        alt="home-icon" class="profile">
-                                </div>
-                                <span class="text-in-button heart-text">2</span>
-                            </span>
-                        </a>
-                    </div> --}}
+                    @livewire('right-sidebar-header')
                     <div class="section-name-header">
                         <div class="arrow" onclick="placeSectionList();"><img alt=""
                                 src="{{ url('duolingo-clone-master/assets/svg/back-button-white.svg') }}">
@@ -87,22 +56,68 @@
 
 
                     @foreach ($themes as $theme)
+                        {{-- @dd($theme) --}}
                         @php
                             $themeOrder++;
                             // $lastLesson = 0;
                         @endphp
                         <section id="section-1">
                             <header class="unit unit-unfinished">
-                                <h1 class="unit-number">Unit {{ $theme->order }}</h1>
+                                <h1 class="unit-number"> {{ __('learn.unit') . $theme->order }}</h1>
                                 <span class="unit-description">{{ $theme->name }}</span>
                             </header>
                         </section>
 
                         @foreach ($theme->lessons->sortBy('order') as $lesson)
                             {{-- {{ $lesson }} --}}
-                            @if (
-                                $lesson->theme->order === $lastTheme + 1 && $lesson->order == 1 && $lastLesson == $lastInTheme or
-                                    $lesson->theme->order == $lastTheme && $lesson->order == $lastLesson + 1)
+                            @if (auth()->user()->learner->progress()->where('lesson_id', $lesson->id)->first())
+                                <div class="alignment-div"
+                                    @switch(true)
+                                    @case(($lesson->order - 1) % 4 == 0 && (($lesson->order - 1 - (($lesson->order - 1) % 4)) / 4) % 2 == 0)
+style="padding: 0px"
+                                        @break
+                                    @case((($lesson->order - 1) % 4) % 2 == 1 && (($lesson->order - 1 - (($lesson->order - 1) % 4)) / 4) % 2 == 0)
+style="padding: 0px 180px 0px 0px;"
+                                        @break
+                                    @case(($lesson->order - 1) % 4 == 2 && (($lesson->order - 1 - (($lesson->order - 1) % 4)) / 4) % 2 == 0)
+style="padding: 0px 300px 0px 0px;"
+                                        @break
+                                    @case(($lesson->order - 1) % 4 == 0)
+style="padding: 0px"
+                                        @break
+                                    @case((($lesson->order - 1) % 4) % 2 == 1)
+style="padding: 0px 0px 0px 180px;"
+                                        @break
+                                    @case(($lesson->order - 1) % 4 == 2)
+style="padding: 0px 0px 0px 300px;"
+                                        @break
+                                    @default
+
+                                @endswitch>
+
+                                    <div class="circle_box completed">
+                                        <button class="lesson-button inactive" onclick="openDialogBoxes(event);">
+                                            <img src="{{ url('duolingo-clone-master/assets/svg/completed-lesson-background.svg') }}"
+                                                class="star-image bg">
+                                            <img src="{{ url('duolingo-clone-master/assets/svg/correct-tick-unit-completed.svg') }}"
+                                                class="star-image">
+                                        </button>
+                                    </div>
+                                    <div class="floating-start-box-bottom hidden completed"
+                                        style="translate: calc(-50% + 0px);">
+                                        <div class="triangle-top"></div>
+                                        <div class="text-container">
+                                            <h1>{{ $lesson->title }}</h1>
+                                            <p>You completed this level!</p>
+                                            <button>Completed</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            @elseif (!$chosen)
+                                @php $chosen = true @endphp
+                                {{-- @dd(
+                                    auth()->user()->learner->progress()->where('lesson_id', $lesson->id)->first()
+                                ) --}}
                                 <div class="alignment-div"
                                     @switch(true)
                                     @case(($lesson->order - 1) % 4 == 0 && (($lesson->order - 1 - (($lesson->order - 1) % 4)) / 4) % 2 == 0)
@@ -157,50 +172,6 @@ style="padding: 0px 0px 0px 300px;"
                                         </div>
                                     </div>
                                 </div>
-                            @elseif ($learner->progress()->where('lesson_id', $lesson->id)->exists())
-                                {{-- @dd($learner->progress->where('lesson_id', $lesson->id)) --}}
-                                <div class="alignment-div"
-                                    @switch(true)
-                                    @case(($lesson->order - 1) % 4 == 0 && (($lesson->order - 1 - (($lesson->order - 1) % 4)) / 4) % 2 == 0)
-style="padding: 0px"
-                                        @break
-                                    @case((($lesson->order - 1) % 4) % 2 == 1 && (($lesson->order - 1 - (($lesson->order - 1) % 4)) / 4) % 2 == 0)
-style="padding: 0px 180px 0px 0px;"
-                                        @break
-                                    @case(($lesson->order - 1) % 4 == 2 && (($lesson->order - 1 - (($lesson->order - 1) % 4)) / 4) % 2 == 0)
-style="padding: 0px 300px 0px 0px;"
-                                        @break
-                                    @case(($lesson->order - 1) % 4 == 0)
-style="padding: 0px"
-                                        @break
-                                    @case((($lesson->order - 1) % 4) % 2 == 1)
-style="padding: 0px 0px 0px 180px;"
-                                        @break
-                                    @case(($lesson->order - 1) % 4 == 2)
-style="padding: 0px 0px 0px 300px;"
-                                        @break
-                                    @default
-
-                                @endswitch>
-
-                                    <div class="circle_box completed">
-                                        <button class="lesson-button inactive" onclick="openDialogBoxes(event);">
-                                            <img src="{{ url('duolingo-clone-master/assets/svg/completed-lesson-background.svg') }}"
-                                                class="star-image bg">
-                                            <img src="{{ url('duolingo-clone-master/assets/svg/correct-tick-unit-completed.svg') }}"
-                                                class="star-image">
-                                        </button>
-                                    </div>
-                                    <div class="floating-start-box-bottom hidden completed"
-                                        style="translate: calc(-50% + 0px);">
-                                        <div class="triangle-top"></div>
-                                        <div class="text-container">
-                                            <h1>{{ $lesson->title }}</h1>
-                                            <p>You completed this level!</p>
-                                            <button>Completed</button>
-                                        </div>
-                                    </div>
-                                </div>
                             @else
                                 <div class="alignment-div"
                                     @switch(true)
@@ -250,1116 +221,8 @@ style="padding: 0px 0px 0px 300px;"
                             @endif
                         @endforeach
                     @endforeach
-
-
-
-                    <section id="section-1">
-                        <header class="unit unit-unfinished">
-                            <h1 class="unit-number">Unit 1</h1>
-                            <span class="unit-description">Tell others what to do, talk about health</span>
-                        </header>
-                        <div class="alignment-div" style="padding: 0px;">
-                            <div class="circle_box completed">
-                                <button class="lesson-button inactive" onclick="openDialogBoxes(event);">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/completed-lesson-background.svg') }}"
-                                        class="star-image bg">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/correct-tick-unit-completed.svg') }}"
-                                        class="star-image">
-                                </button>
-                            </div>
-                            <div class="floating-start-box-bottom hidden completed"
-                                style="translate: calc(-50% + 0px);">
-                                <div class="triangle-top"></div>
-                                <div class="text-container">
-                                    <h1>Form basic sentences</h1>
-                                    <p>You completed this level!</p>
-                                    <button>Completed</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="alignment-div" style="padding: 0px 180px 0px 0px;">
-                            <div class="circle_box completed">
-                                <button class="lesson-button inactive" onclick="openDialogBoxes(event);">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/completed-lesson-background.svg') }}"
-                                        class="star-image bg">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/correct-tick-unit-completed.svg') }}"
-                                        class="star-image">
-                                </button>
-                            </div>
-                            <div class="floating-start-box-bottom hidden completed"
-                                style="translate: calc(-50% - 90px);">
-                                <div class="triangle-top"></div>
-                                <div class="text-container">
-                                    <h1>Form basic sentences</h1>
-                                    <p>You completed this level!</p>
-                                    <button>Completed</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="alignment-div" style="padding: 0px 300px 0px 0px;">
-                            <div class="circle_box completed">
-                                <button class="lesson-button inactive" onclick="openDialogBoxes(event);">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/completed-lesson-background.svg') }}"
-                                        class="star-image bg">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/correct-tick-unit-completed.svg') }}"
-                                        class="star-image">
-                                </button>
-                            </div>
-                            <div class="floating-start-box-bottom hidden completed"
-                                style="translate: calc(-50% - 150px);">
-                                <div class="triangle-top"></div>
-                                <div class="text-container">
-                                    <h1>Greet people</h1>
-                                    <p>You completed this level!</p>
-                                    <button>Completed</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="animated-sprite-in-lesson-1"></div>
-                        <div class="animated-sprite-in-lesson-2 greyd-sprite"></div>
-                        <div class="alignment-div" style="padding: 0px 180px 0px 0px;">
-                            <div class="circle_box">
-                                <button class="lesson-button" onclick="openDialogBoxes(event);">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/star-in-lesson-white.svg') }}"
-                                        class="star-image">
-                                    <circle-progress value="0" max="100" text-format="none" min="0"
-                                        start-angle="0" indeterminate-text="?" animation="easeInOutCubic"
-                                        animation-duration="600"></circle-progress>
-                                </button>
-                                <div class="floating-start-box">
-                                    <div class="text">
-                                        START
-                                    </div>
-                                    <div class="triangle"></div>
-                                </div>
-                            </div>
-                            <div class="floating-start-box-bottom hidden" style="translate: calc(-50% - 90px);">
-                                <div class="triangle-top"></div>
-                                <div class="text-container">
-                                    <h1>Form basic sentences</h1>
-                                    <p>Lesson 1 of 4</p>
-                                    <button onclick="startLesson()">Start +10 XP</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="alignment-div" style="padding: 0px;">
-                            <div class="circle_box locked">
-                                <button class="lesson-button inactive" onclick="openDialogBoxes(event);">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/locked-button-grey.svg') }}"
-                                        class="star-image">
-                                </button>
-                            </div>
-                            <div class="floating-start-box-bottom hidden locked" style="translate: calc(-50% + 0px);">
-                                <div class="triangle-top"></div>
-                                <div class="text-container">
-                                    <h1>Form basic sentences</h1>
-                                    <p>Complete all the levels above to<br>unlock this</p>
-                                    <button>Locked</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="alignment-div" style="padding: 0px 0px 0px 180px;">
-                            <div class="circle_box locked">
-                                <button class="lesson-button inactive" onclick="openDialogBoxes(event);">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/locked-button-grey.svg') }}"
-                                        class="star-image">
-                                </button>
-                            </div>
-                            <div class="floating-start-box-bottom hidden locked"
-                                style="translate: calc(-50% + 90px);">
-                                <div class="triangle-top"></div>
-                                <div class="text-container">
-                                    <h1>Form basic sentences</h1>
-                                    <p>Complete all the levels above to<br>unlock this</p>
-                                    <button>Locked</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="alignment-div" style="padding: 0px 0px 0px 300px;">
-                            <div class="circle_box locked">
-                                <button class="lesson-button inactive" onclick="openDialogBoxes(event);">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/locked-button-grey.svg') }}"
-                                        class="star-image">
-                                </button>
-                            </div>
-                            <div class="floating-start-box-bottom hidden locked"
-                                style="translate: calc(-50% + 150px);">
-                                <div class="triangle-top"></div>
-                                <div class="text-container">
-                                    <h1>Greet people</h1>
-                                    <p>Complete all the levels above to<br>unlock this</p>
-                                    <button>Locked</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="alignment-div" style="padding: 0px 0px 0px 180px;">
-                            <div class="circle_box locked">
-                                <button class="lesson-button inactive" onclick="openDialogBoxes(event);">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/locked-button-grey.svg') }}"
-                                        class="star-image">
-                                </button>
-                            </div>
-                            <div class="floating-start-box-bottom hidden locked"
-                                style="translate: calc(-50% + 90px);">
-                                <div class="triangle-top"></div>
-                                <div class="text-container">
-                                    <h1>Form basic sentences</h1>
-                                    <p>Complete all the levels above to<br>unlock this</p>
-                                    <button>Locked</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="alignment-div" style="padding: 0px;">
-                            <div class="circle_box locked">
-                                <button class="lesson-button inactive" onclick="openDialogBoxes(event);">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/locked-button-grey.svg') }}"
-                                        class="star-image">
-                                </button>
-                            </div>
-                            <div class="floating-start-box-bottom hidden locked" style="translate: calc(-50% + 0px);">
-                                <div class="triangle-top"></div>
-                                <div class="text-container">
-                                    <h1>Form basic sentences</h1>
-                                    <p>Complete all the levels above to<br>unlock this</p>
-                                    <button>Locked</button>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-
-
-
-
-
-
-                    <section id="section-2">
-                        <header class="unit unit-unfinished">
-                            <h1 class="unit-number">Unit 2</h1>
-                            <span class="unit-description">Describe places, tell time</span>
-                        </header>
-                        <div class="alignment-div" style="padding: 0px;">
-                            <div class="circle_box locked">
-                                <button class="lesson-button inactive" onclick="openDialogBoxes(event);">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/locked-button-grey.svg') }}"
-                                        class="star-image">
-                                </button>
-                            </div>
-                            <div class="floating-start-box-bottom hidden locked" style="translate: calc(-50% + 0px);">
-                                <div class="triangle-top"></div>
-                                <div class="text-container">
-                                    <h1>Chapter 1</h1>
-                                    <p>Complete all the levels above to<br>unlock this</p>
-                                    <button>Locked</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="alignment-div" style="padding: 0px 180px 0px 0px;">
-                            <div class="circle_box locked">
-                                <button class="lesson-button inactive" onclick="openDialogBoxes(event);">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/locked-button-grey.svg') }}"
-                                        class="star-image">
-                                </button>
-                            </div>
-                            <div class="floating-start-box-bottom hidden locked"
-                                style="translate: calc(-50% - 90px);">
-                                <div class="triangle-top"></div>
-                                <div class="text-container">
-                                    <h1>Chapter 2</h1>
-                                    <p>Complete all the levels above to<br>unlock this</p>
-                                    <button>Locked</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="alignment-div" style="padding: 0px 300px 0px 0px;">
-                            <div class="circle_box locked">
-                                <button class="lesson-button inactive" onclick="openDialogBoxes(event);">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/locked-button-grey.svg') }}"
-                                        class="star-image">
-                                </button>
-                            </div>
-                            <div class="floating-start-box-bottom hidden locked"
-                                style="translate: calc(-50% - 150px);">
-                                <div class="triangle-top"></div>
-                                <div class="text-container">
-                                    <h1>Chapter 3</h1>
-                                    <p>Complete all the levels above to<br>unlock this</p>
-                                    <button>Locked</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="alignment-div" style="padding: 0px 180px 0px 0px;">
-                            <div class="circle_box locked">
-                                <button class="lesson-button inactive" onclick="openDialogBoxes(event);">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/locked-button-grey.svg') }}"
-                                        class="star-image">
-                                </button>
-                            </div>
-                            <div class="floating-start-box-bottom hidden locked"
-                                style="translate: calc(-50% - 90px);">
-                                <div class="triangle-top"></div>
-                                <div class="text-container">
-                                    <h1>Chapter 4</h1>
-                                    <p>Complete all the levels above to<br>unlock this</p>
-                                    <button>Locked</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="alignment-div" style="padding: 0px;">
-                            <div class="circle_box locked">
-                                <button class="lesson-button inactive" onclick="openDialogBoxes(event);">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/locked-button-grey.svg') }}"
-                                        class="star-image">
-                                </button>
-                            </div>
-                            <div class="floating-start-box-bottom hidden locked" style="translate: calc(-50% + 0px);">
-                                <div class="triangle-top"></div>
-                                <div class="text-container">
-                                    <h1>Chapter 5</h1>
-                                    <p>Complete all the levels above to<br>unlock this</p>
-                                    <button>Locked</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="alignment-div" style="padding: 0px 0px 0px 180px;">
-                            <div class="circle_box locked">
-                                <button class="lesson-button inactive" onclick="openDialogBoxes(event);">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/locked-button-grey.svg') }}"
-                                        class="star-image">
-                                </button>
-                            </div>
-                            <div class="floating-start-box-bottom hidden locked"
-                                style="translate: calc(-50% + 90px);">
-                                <div class="triangle-top"></div>
-                                <div class="text-container">
-                                    <h1>Chapter 6</h1>
-                                    <p>Complete all the levels above to<br>unlock this</p>
-                                    <button>Locked</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="alignment-div" style="padding: 0px 0px 0px 300px;">
-                            <div class="circle_box locked">
-                                <button class="lesson-button inactive" onclick="openDialogBoxes(event);">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/locked-button-grey.svg') }}"
-                                        class="star-image">
-                                </button>
-                            </div>
-                            <div class="floating-start-box-bottom hidden locked"
-                                style="translate: calc(-50% + 150px);">
-                                <div class="triangle-top"></div>
-                                <div class="text-container">
-                                    <h1>Chapter 7</h1>
-                                    <p>Complete all the levels above to<br>unlock this</p>
-                                    <button>Locked</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="alignment-div" style="padding: 0px 0px 0px 180px;">
-                            <div class="circle_box locked">
-                                <button class="lesson-button inactive" onclick="openDialogBoxes(event);">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/locked-button-grey.svg') }}"
-                                        class="star-image">
-                                </button>
-                            </div>
-                            <div class="floating-start-box-bottom hidden locked"
-                                style="translate: calc(-50% + 90px);">
-                                <div class="triangle-top"></div>
-                                <div class="text-container">
-                                    <h1>Chapter 8</h1>
-                                    <p>Complete all the levels above to<br>unlock this</p>
-                                    <button>Locked</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="alignment-div" style="padding: 0px;">
-                            <div class="circle_box locked">
-                                <button class="lesson-button inactive" onclick="openDialogBoxes(event);">
-                                    <img src="{{ url('duolingo-clone-master/assets/svg/locked-button-grey.svg') }}"
-                                        class="star-image">
-                                </button>
-                            </div>
-                            <div class="floating-start-box-bottom hidden locked" style="translate: calc(-50% + 0px);">
-                                <div class="triangle-top"></div>
-                                <div class="text-container">
-                                    <h1>Chapter 9</h1>
-                                    <p>Complete all the levels above to<br>unlock this</p>
-                                    <button>Locked</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="animated-sprite-in-lesson-2 greyd-sprite"><svg xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 1080 1080" width="1080" height="1080"
-                                preserveAspectRatio="xMidYMid meet"
-                                style="width: 100%; height: 100%; transform: translate3d(0px, 0px, 0px);">
-                                <defs>
-                                    <clipPath id="__lottie_element_678">
-                                        <rect width="1080" height="1080" x="0" y="0"></rect>
-                                    </clipPath>
-                                    <clipPath id="__lottie_element_683">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <clipPath id="__lottie_element_690">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <mask id="__lottie_element_698" mask-type="alpha">
-                                        <g clip-path="url(#__lottie_element_699)" style="display: none;">
-                                            <g style="display: none;">
-                                                <g>
-                                                    <path></path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </mask>
-                                    <clipPath id="__lottie_element_699">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <mask id="__lottie_element_743" mask-type="alpha">
-                                        <g clip-path="url(#__lottie_element_745)" style="display: none;">
-                                            <g style="display: none;">
-                                                <g>
-                                                    <path></path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </mask>
-                                    <clipPath id="__lottie_element_745">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <mask id="__lottie_element_754" mask-type="alpha">
-                                        <g clip-path="url(#__lottie_element_755)" style="display: none;">
-                                            <g style="display: none;">
-                                                <g>
-                                                    <path></path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </mask>
-                                    <clipPath id="__lottie_element_755">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <mask id="__lottie_element_766" mask-type="alpha">
-                                        <g clip-path="url(#__lottie_element_767)" style="display: none;">
-                                            <g style="display: none;">
-                                                <g>
-                                                    <path></path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </mask>
-                                    <clipPath id="__lottie_element_767">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <clipPath id="__lottie_element_776">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <mask id="__lottie_element_782" mask-type="alpha">
-                                        <g clip-path="url(#__lottie_element_784)" style="display: none;">
-                                            <g style="display: none;">
-                                                <g>
-                                                    <path></path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </mask>
-                                    <clipPath id="__lottie_element_784">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <mask id="__lottie_element_793" mask-type="alpha">
-                                        <g clip-path="url(#__lottie_element_794)" style="display: none;">
-                                            <g style="display: none;">
-                                                <g>
-                                                    <path></path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </mask>
-                                    <clipPath id="__lottie_element_794">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <clipPath id="__lottie_element_804">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <mask id="__lottie_element_812" mask-type="alpha">
-                                        <g clip-path="url(#__lottie_element_813)" style="display: none;">
-                                            <g style="display: none;">
-                                                <g>
-                                                    <path></path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </mask>
-                                    <clipPath id="__lottie_element_813">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <clipPath id="__lottie_element_822">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <clipPath id="__lottie_element_829">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <clipPath id="__lottie_element_836">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <clipPath id="__lottie_element_843">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <clipPath id="__lottie_element_850">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <clipPath id="__lottie_element_878">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <clipPath id="__lottie_element_885">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <mask id="__lottie_element_893" mask-type="alpha">
-                                        <g clip-path="url(#__lottie_element_894)" transform="matrix(1,0,0,1,0,0)"
-                                            opacity="1" style="display: block;">
-                                            <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,537.81396484375,499.448974609375)"
-                                                opacity="1" style="display: block;">
-                                                <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                                                    <path fill="rgb(89,204,2)" fill-opacity="1"
-                                                        d=" M-56.888999938964844,-259.6510009765625 C-18.452999114990234,-255.89199829101562 -0.04500000178813934,-223.6929931640625 45.452999114990234,-211.82400512695312 C95.79499816894531,-198.6909942626953 118.7770004272461,-224.95599365234375 166.92999267578125,-207.4459991455078 C201.73199462890625,-194.79100036621094 241.3489990234375,-147.2550048828125 230.40499877929688,-71.74199676513672 C219.85899353027344,1.0260000228881836 208.052001953125,160.52000427246094 72.81300354003906,233.59300231933594 C-62.89099884033203,306.9169921875 -179.67599487304688,213.6230010986328 -210.63400268554688,162.45799255371094 C-239.22900390625,115.1989974975586 -230.33399963378906,35.558998107910156 -222.67300415039062,-0.03400000184774399 C-215.01199340820312,-35.62699890136719 -224.86099243164062,-118.8010025024414 -185.46299743652344,-186.6529998779297 C-146.06500244140625,-254.5050048828125 -95.32499694824219,-263.4100036621094 -56.888999938964844,-259.6510009765625z">
-                                                    </path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </mask>
-                                    <clipPath id="__lottie_element_894">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <mask id="__lottie_element_938" mask-type="alpha">
-                                        <g clip-path="url(#__lottie_element_940)"
-                                            transform="matrix(1.21280038356781,0,0,1.21280038356781,-83.10855102539062,-117.54815673828125)"
-                                            opacity="1" style="display: block;">
-                                            <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,403.8789978027344,513.1619873046875)"
-                                                opacity="1" style="display: block;">
-                                                <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                                                    <path fill="rgb(255,255,255)" fill-opacity="1"
-                                                        d=" M22.53499984741211,-6.578999996185303 C17.27400016784668,61.75600051879883 10.685999870300293,63.60300064086914 0,63.1510009765625 C-28.43400001525879,61.948001861572266 -37.66899871826172,51.10300064086914 -37.66600036621094,-7.236999988555908 C-37.66299819946289,-56.4630012512207 -31.420000076293945,-75.87100219726562 -15.131999969482422,-75.21900177001953 C17.572999954223633,-73.90899658203125 24.50200080871582,-32.12099838256836 22.53499984741211,-6.578999996185303z">
-                                                    </path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </mask>
-                                    <clipPath id="__lottie_element_940">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <mask id="__lottie_element_949" mask-type="alpha">
-                                        <g clip-path="url(#__lottie_element_950)"
-                                            transform="matrix(1.0000004768371582,0,0,1.0000004768371582,0.00054931640625,0)"
-                                            opacity="1" style="display: block;">
-                                            <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,403.8789978027344,513.1619873046875)"
-                                                opacity="1" style="display: block;">
-                                                <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                                                    <path fill="rgb(255,255,255)" fill-opacity="1"
-                                                        d=" M22.53499984741211,-6.578999996185303 C17.27400016784668,61.75600051879883 10.685999870300293,63.60300064086914 0,63.1510009765625 C-28.43400001525879,61.948001861572266 -37.66899871826172,51.10300064086914 -37.66600036621094,-7.236999988555908 C-37.66299819946289,-56.4630012512207 -31.420000076293945,-75.87100219726562 -15.131999969482422,-75.21900177001953 C17.572999954223633,-73.90899658203125 24.50200080871582,-32.12099838256836 22.53499984741211,-6.578999996185303z">
-                                                    </path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </mask>
-                                    <clipPath id="__lottie_element_950">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <mask id="__lottie_element_961" mask-type="alpha">
-                                        <g clip-path="url(#__lottie_element_962)"
-                                            transform="matrix(1.0000004768371582,0,0,1.0000004768371582,0.00054931640625,0)"
-                                            opacity="1" style="display: block;">
-                                            <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,403.8789978027344,513.1619873046875)"
-                                                opacity="1" style="display: block;">
-                                                <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                                                    <path fill="rgb(255,255,255)" fill-opacity="1"
-                                                        d=" M22.53499984741211,-6.578999996185303 C17.27400016784668,61.75600051879883 10.685999870300293,63.60300064086914 0,63.1510009765625 C-28.43400001525879,61.948001861572266 -37.66899871826172,51.10300064086914 -37.66600036621094,-7.236999988555908 C-37.66299819946289,-56.4630012512207 -31.420000076293945,-75.87100219726562 -15.131999969482422,-75.21900177001953 C17.572999954223633,-73.90899658203125 24.50200080871582,-32.12099838256836 22.53499984741211,-6.578999996185303z">
-                                                    </path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </mask>
-                                    <clipPath id="__lottie_element_962">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <clipPath id="__lottie_element_971">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <mask id="__lottie_element_977" mask-type="alpha">
-                                        <g clip-path="url(#__lottie_element_979)"
-                                            transform="matrix(1.0000004768371582,0,0,1.0000004768371582,-0.004302978515625,1.99993896484375)"
-                                            opacity="1" style="display: block;">
-                                            <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,527.2230224609375,555.5960083007812)"
-                                                opacity="1" style="display: block;">
-                                                <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                                                    <path fill="rgb(255,255,255)" fill-opacity="1"
-                                                        d=" M68.51300048828125,2.7739999294281006 C60.233001708984375,63.689998626708984 41.8120002746582,76.51799774169922 -9.72700023651123,68.09700012207031 C-63.1150016784668,59.374000549316406 -72.66200256347656,44.93899917602539 -65.5530014038086,-8.376999855041504 C-59.93000030517578,-50.54899978637695 -40.42399978637695,-79.0739974975586 13.576000213623047,-71.38600158691406 C56.292999267578125,-65.30500030517578 75.16999816894531,-46.20600128173828 68.51300048828125,2.7739999294281006z">
-                                                    </path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </mask>
-                                    <clipPath id="__lottie_element_979">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <mask id="__lottie_element_988" mask-type="alpha">
-                                        <g clip-path="url(#__lottie_element_989)"
-                                            transform="matrix(1.0000004768371582,0,0,1.0000004768371582,-0.000335693359375,-0.00006103515625)"
-                                            opacity="1" style="display: block;">
-                                            <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,527.2230224609375,555.5960083007812)"
-                                                opacity="1" style="display: block;">
-                                                <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                                                    <path fill="rgb(255,255,255)" fill-opacity="1"
-                                                        d=" M68.51300048828125,2.7739999294281006 C60.233001708984375,63.689998626708984 41.8120002746582,76.51799774169922 -9.72700023651123,68.09700012207031 C-63.1150016784668,59.374000549316406 -72.66200256347656,44.93899917602539 -65.5530014038086,-8.376999855041504 C-59.93000030517578,-50.54899978637695 -40.42399978637695,-79.0739974975586 13.576000213623047,-71.38600158691406 C56.292999267578125,-65.30500030517578 75.16999816894531,-46.20600128173828 68.51300048828125,2.7739999294281006z">
-                                                    </path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </mask>
-                                    <clipPath id="__lottie_element_989">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <clipPath id="__lottie_element_999">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <mask id="__lottie_element_1007" mask-type="alpha">
-                                        <g clip-path="url(#__lottie_element_1008)"
-                                            transform="matrix(1.0000004768371582,0,0,1.0000004768371582,-0.000335693359375,-0.00006103515625)"
-                                            opacity="1" style="display: block;">
-                                            <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,527.2230224609375,555.5960083007812)"
-                                                opacity="1" style="display: block;">
-                                                <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                                                    <path fill="rgb(255,255,255)" fill-opacity="1"
-                                                        d=" M68.51300048828125,2.7739999294281006 C60.233001708984375,63.689998626708984 41.8120002746582,76.51799774169922 -9.72700023651123,68.09700012207031 C-63.1150016784668,59.374000549316406 -72.66200256347656,44.93899917602539 -65.5530014038086,-8.376999855041504 C-59.93000030517578,-50.54899978637695 -40.42399978637695,-79.0739974975586 13.576000213623047,-71.38600158691406 C56.292999267578125,-65.30500030517578 75.16999816894531,-46.20600128173828 68.51300048828125,2.7739999294281006z">
-                                                    </path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </mask>
-                                    <clipPath id="__lottie_element_1008">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <clipPath id="__lottie_element_1017">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <clipPath id="__lottie_element_1024">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <clipPath id="__lottie_element_1031">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <clipPath id="__lottie_element_1038">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                    <clipPath id="__lottie_element_1045">
-                                        <path d="M0,0 L1080,0 L1080,1080 L0,1080z"></path>
-                                    </clipPath>
-                                </defs>
-                                <g clip-path="url(#__lottie_element_678)">
-                                    <g clip-path="url(#__lottie_element_878)" transform="matrix(1,0,0,1,0,0)"
-                                        opacity="1" style="display: block;">
-                                        <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,501.38299560546875,639.3900146484375)"
-                                            opacity="0.3" style="display: block;">
-                                            <path fill="rgb(75,75,75)" fill-opacity="1"
-                                                d=" M206.2969970703125,0 C206.2969970703125,82.447998046875 113.93499755859375,149.28599548339844 0,149.28599548339844 C-113.93499755859375,149.28599548339844 -206.2969970703125,82.447998046875 -206.2969970703125,0 C-206.2969970703125,-82.447998046875 -113.93499755859375,-149.28599548339844 0,-149.28599548339844 C113.93499755859375,-149.28599548339844 206.2969970703125,-82.447998046875 206.2969970703125,0z">
-                                            </path>
-                                        </g>
-                                        <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,366.198974609375,484.1910095214844)"
-                                            opacity="1" style="display: block;">
-                                            <path fill="rgb(89,204,2)" fill-opacity="1"
-                                                d=" M3.5409998893737793,-89.28399658203125 C-12.368000030517578,-118.28800201416016 -40.095001220703125,-78.12899780273438 -41.667999267578125,-58.04499816894531 C-44.71500015258789,-19.13800048828125 -30.929000854492188,19.690000534057617 -1.8140000104904175,52.24599838256836 C11.034000396728516,66.61199951171875 31.534000396728516,70.61199951171875 50.14099884033203,74.3010025024414 C55.8650016784668,75.43599700927734 3.5409998893737793,-89.28399658203125 3.5409998893737793,-89.28399658203125z">
-                                            </path>
-                                        </g>
-                                        <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,373.760009765625,649.0380249023438)"
-                                            opacity="1" style="display: block;">
-                                            <path fill="rgb(244,144,2)" fill-opacity="1"
-                                                d=" M-24.18000030517578,-39.74399948120117 C-3.6659998893737793,-35.54199981689453 20.208999633789062,-30.79199981689453 36.43299865722656,-26.55500030517578 C57.34000015258789,-21.094999313354492 54.845001220703125,-4.622000217437744 52.6619987487793,7.3979997634887695 C48.60900115966797,29.711999893188477 37.61800003051758,34.4630012512207 14.281999588012695,30.892000198364258 C-9.791000366210938,27.208999633789062 -20.165000915527344,24.833999633789062 -36.229000091552734,20.83300018310547 C-55.007999420166016,16.1560001373291 -68.16500091552734,2.2090001106262207 -65.41899871826172,-15.147000312805176 C-62.13999938964844,-35.87200164794922 -42.26499938964844,-43.44900131225586 -24.18000030517578,-39.74399948120117z">
-                                            </path>
-                                        </g>
-                                        <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,387.2330017089844,421.9360046386719)"
-                                            opacity="1" style="display: block;">
-                                            <path fill="rgb(112,149,214)" fill-opacity="1"
-                                                d=" M56.233001708984375,12.508999824523926 C43.14500045776367,71.34400177001953 7.357999801635742,113.44000244140625 -23.697999954223633,106.53099822998047 C-54.75400161743164,99.62200164794922 -69.32099914550781,46.32600021362305 -56.233001708984375,-12.508999824523926 C-43.14500045776367,-71.34400177001953 -7.357999801635742,-113.44000244140625 23.697999954223633,-106.53099822998047 C54.75400161743164,-99.62200164794922 69.32099914550781,-46.32600021362305 56.233001708984375,12.508999824523926z">
-                                            </path>
-                                        </g>
-                                        <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,408.25299072265625,334.0570068359375)"
-                                            opacity="1" style="display: block;">
-                                            <path fill="rgb(91,91,91)" fill-opacity="1"
-                                                d=" M20.7189998626709,-41.9379997253418 C-5.894999980926514,-19.023000717163086 -24.18600082397461,10.531999588012695 -36.39699935913086,38.66999816894531 C-36.39699935913086,38.66999816894531 -19.979000091552734,41.9379997253418 -19.979000091552734,41.9379997253418 C-19.979000091552734,41.9379997253418 -1.7649999856948853,5.678999900817871 36.39699935913086,-24.16699981689453 C36.39699935913086,-24.16699981689453 20.7189998626709,-41.9379997253418 20.7189998626709,-41.9379997253418z">
-                                            </path>
-                                        </g>
-                                        <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,491.7239990234375,301.78399658203125)"
-                                            opacity="1" style="display: block;">
-                                            <path fill="rgb(91,91,91)" fill-opacity="1"
-                                                d=" M112.28500366210938,-6.02400016784668 C7.888999938964844,-43.97600173950195 -60.840999603271484,1.3580000400543213 -97.54399871826172,40.36600112915039 C-97.54399871826172,40.36600112915039 -115.7020034790039,28.73699951171875 -115.7020034790039,28.73699951171875 C-74.38800048828125,-24.7450008392334 -3.2109999656677246,-63.80099868774414 115.7020034790039,-24.163000106811523 C115.7020034790039,-24.163000106811523 112.28500366210938,-6.02400016784668 112.28500366210938,-6.02400016784668z">
-                                            </path>
-                                        </g>
-                                        <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,403.7941589355469,424.3193664550781)"
-                                            opacity="1" style="display: block;">
-                                            <path fill="rgb(91,91,91)" fill-opacity="1"
-                                                d=" M58.14099884033203,12.934000015258789 C44.07400131225586,76.1709976196289 6.638999938964844,121.64299774169922 -25.47100067138672,114.5 C-57.58100128173828,107.35700225830078 -72.20800018310547,50.303001403808594 -58.14099884033203,-12.934000015258789 C-44.07400131225586,-76.1709976196289 -6.638999938964844,-121.64299774169922 25.47100067138672,-114.5 C57.58100128173828,-107.35700225830078 72.20800018310547,-50.303001403808594 58.14099884033203,12.934000015258789z">
-                                            </path>
-                                        </g>
-                                        <g clip-path="url(#__lottie_element_1045)" style="display: none;">
-                                            <g style="display: none;">
-                                                <path></path>
-                                            </g>
-                                        </g>
-                                        <g clip-path="url(#__lottie_element_1038)" style="display: none;">
-                                            <g style="display: none;">
-                                                <path></path>
-                                            </g>
-                                        </g>
-                                        <g clip-path="url(#__lottie_element_885)" transform="matrix(1,0,0,1,0,0)"
-                                            opacity="1" style="display: block;">
-                                            <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,537.81396484375,499.448974609375)"
-                                                opacity="1" style="display: block;">
-                                                <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                                                    <path fill="rgb(89,204,2)" fill-opacity="1"
-                                                        d=" M-56.888999938964844,-259.6510009765625 C-18.452999114990234,-255.89199829101562 -0.04500000178813934,-223.6929931640625 45.452999114990234,-211.82400512695312 C95.79499816894531,-198.6909942626953 118.7770004272461,-224.95599365234375 166.92999267578125,-207.4459991455078 C201.73199462890625,-194.79100036621094 241.3489990234375,-147.2550048828125 230.40499877929688,-71.74199676513672 C219.85899353027344,1.0260000228881836 208.052001953125,160.52000427246094 72.81300354003906,233.59300231933594 C-62.89099884033203,306.9169921875 -179.67599487304688,213.6230010986328 -210.63400268554688,162.45799255371094 C-239.22900390625,115.1989974975586 -230.33399963378906,35.558998107910156 -222.67300415039062,-0.03400000184774399 C-215.01199340820312,-35.62699890136719 -224.86099243164062,-118.8010025024414 -185.46299743652344,-186.6529998779297 C-146.06500244140625,-254.5050048828125 -95.32499694824219,-263.4100036621094 -56.888999938964844,-259.6510009765625z">
-                                                    </path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                        <g clip-path="url(#__lottie_element_1031)" transform="matrix(1,0,0,1,0,0)"
-                                            opacity="1" style="display: block;">
-                                            <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,557.6260375976562,696.407958984375)"
-                                                opacity="1" style="display: block;">
-                                                <path fill="rgb(244,144,2)" fill-opacity="1"
-                                                    d=" M-40.45100021362305,-16.334999084472656 C-29.466999053955078,-25.670000076293945 -12.789999961853027,-37.05400085449219 -0.3100000023841858,-44.090999603271484 C13.87399959564209,-52.0890007019043 36.12099838256836,-59.87099838256836 48.59600067138672,-40.87200164794922 C59.65599822998047,-24.027999877929688 52.36899948120117,-4.353000164031982 36.52899932861328,8.62600040435791 C24.624000549316406,18.3799991607666 12.03600025177002,28.12700080871582 0.5839999914169312,34.8129997253418 C-18.134000778198242,45.742000579833984 -36.13600158691406,50.23400115966797 -49.6150016784668,32.01100158691406 C-63.09400177001953,13.788000106811523 -57.43600082397461,-1.8990000486373901 -40.45100021362305,-16.334999084472656z">
-                                                </path>
-                                            </g>
-                                        </g>
-                                        <g clip-path="url(#__lottie_element_1024)" style="display: none;">
-                                            <g style="display: none;">
-                                                <path></path>
-                                            </g>
-                                        </g>
-                                        <g clip-path="url(#__lottie_element_1017)" style="display: none;">
-                                            <g style="display: none;">
-                                                <path></path>
-                                            </g>
-                                        </g>
-                                        <g mask="url(#__lottie_element_893)" style="display: block;">
-                                            <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,482.88299560546875,515.2059936523438)"
-                                                opacity="1">
-                                                <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                                                    <path fill="rgb(138,226,23)" fill-opacity="1"
-                                                        d=" M-25.555999755859375,96.0530014038086 C-15.942999839782715,112.07499694824219 58.04899978637695,183.94000244140625 137.30099487304688,109.45500183105469 C181.73300170898438,61.57099914550781 156.031005859375,-19.88599967956543 142.14500427246094,-31.591999053955078 C157.0989990234375,-66.30699920654297 143.75999450683594,-78.7959976196289 134.13400268554688,-70.0459976196289 C126.13200378417969,-62.77199935913086 104.40499877929688,-49.23400115966797 104.40499877929688,-49.23400115966797 C112.99199676513672,-63.33000183105469 114.5979995727539,-77.16000366210938 113.89900207519531,-87.20999908447266 C112.61599731445312,-105.66799926757812 101.42500305175781,-111.44499969482422 84.96900177001953,-94.35600280761719 C68.51300048828125,-77.26699829101562 6.933000087738037,-34.042999267578125 -30.40999984741211,-47.96799850463867 C-30.40999984741211,-47.96799850463867 -67.54499816894531,-62.67300033569336 -74.80599975585938,-129.83399963378906 C-74.80599975585938,-129.83399963378906 -74.80599975585938,-149.80099487304688 -86.90699768066406,-150.406005859375 C-99.00800323486328,-151.01100158691406 -113.52899932861328,-125.5989990234375 -112.92400360107422,-106.23699951171875 C-124.33399963378906,-123.66100311279297 -114.1719970703125,-134.73800659179688 -119.40699768066406,-138.04400634765625 C-126.0530014038086,-142.24099731445312 -133.37899780273438,-127.74600219726562 -136.76400756835938,-107.17400360107422 C-136.76400756835938,-107.17400360107422 -154.30999755859375,-54.81399917602539 -154.73399353027344,-15.482999801635742 C-155.10899353027344,19.325000762939453 -153.11199951171875,47.159000396728516 -132.02999877929688,64.8219985961914 C-116.34400177001953,77.96399688720703 -102.80500030517578,79.5 -74.5199966430664,70.0719985961914 C-46.23500061035156,60.64400100708008 -25.555999755859375,96.0530014038086 -25.555999755859375,96.0530014038086z">
-                                                    </path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                        <g clip-path="url(#__lottie_element_999)"
-                                            transform="matrix(1.0000004768371582,0,0,1.0000004768371582,-0.000335693359375,-0.00006103515625)"
-                                            opacity="1" style="display: block;">
-                                            <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,527.2230224609375,555.5960083007812)"
-                                                opacity="1" style="display: block;">
-                                                <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                                                    <path fill="rgb(255,255,255)" fill-opacity="1"
-                                                        d=" M68.51300048828125,2.7739999294281006 C60.233001708984375,63.689998626708984 41.8120002746582,76.51799774169922 -9.72700023651123,68.09700012207031 C-63.1150016784668,59.374000549316406 -72.66200256347656,44.93899917602539 -65.5530014038086,-8.376999855041504 C-59.93000030517578,-50.54899978637695 -40.42399978637695,-79.0739974975586 13.576000213623047,-71.38600158691406 C56.292999267578125,-65.30500030517578 75.16999816894531,-46.20600128173828 68.51300048828125,2.7739999294281006z">
-                                                    </path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                        <g mask="url(#__lottie_element_1007)" style="display: block;">
-                                            <g transform="matrix(0.7600003480911255,0,0,0.7600003480911255,505.8676452636719,563.79150390625)"
-                                                opacity="1">
-                                                <path fill="rgb(75,75,75)" fill-opacity="1"
-                                                    d=" M6.308000087738037,-47.17300033569336 C24.516000747680664,-45.77799987792969 34.38399887084961,-33.93600082397461 32.62799835205078,-7.0980000495910645 C31.069000244140625,16.719999313354492 30.469999313354492,41.327999114990234 -1.156000018119812,38.88999938964844 C-24.167999267578125,37.11600112915039 -28.773000717163086,16.722000122070312 -26.875999450683594,-10.37600040435791 C-25.243999481201172,-33.680999755859375 -11.692999839782715,-48.551998138427734 6.308000087738037,-47.17300033569336z">
-                                                </path>
-                                            </g>
-                                        </g>
-                                        <g mask="url(#__lottie_element_988)" style="display: block;">
-                                            <g transform="matrix(0.7600003480911255,0,0,0.7600003480911255,501.7613525390625,539.524658203125)"
-                                                opacity="1">
-                                                <path fill="rgb(255,255,255)" fill-opacity="1"
-                                                    d=" M5.507999897003174,8.428000450134277 C-1.3899999856948853,15.484000205993652 -12.331000328063965,15.97599983215332 -18.92799949645996,9.526000022888184 C-25.524999618530273,3.0759999752044678 -25.2810001373291,-7.872000217437744 -18.382999420166016,-14.928000450134277 C-11.484999656677246,-21.983999252319336 -0.5440000295639038,-22.47599983215332 6.052999973297119,-16.025999069213867 C12.649999618530273,-9.576000213623047 12.406000137329102,1.371999979019165 5.507999897003174,8.428000450134277z">
-                                                </path>
-                                            </g>
-                                        </g>
-                                        <g mask="url(#__lottie_element_977)" style="display: block;">
-                                            <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,533.883544921875,659.2716064453125)"
-                                                opacity="1">
-                                                <path fill="rgb(138,226,23)" fill-opacity="1"
-                                                    d=" M77.31900024414062,-79.92900085449219 C9.46500015258789,-108.09500122070312 -52.86800003051758,-101.16899871826172 -96.73300170898438,-59.612998962402344 C-96.73300170898438,-59.612998962402344 -71.79900360107422,96.91400146484375 -71.79900360107422,96.91400146484375 C-71.79900360107422,96.91400146484375 96.73300170898438,67.36299896240234 96.73300170898438,67.36299896240234 C96.73300170898438,67.36299896240234 77.31900024414062,-79.92900085449219 77.31900024414062,-79.92900085449219z">
-                                                </path>
-                                            </g>
-                                        </g>
-                                        <g clip-path="url(#__lottie_element_971)"
-                                            transform="matrix(1.0000004768371582,0,0,1.0000004768371582,0.00054931640625,0)"
-                                            opacity="1" style="display: block;">
-                                            <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,403.8789978027344,513.1619873046875)"
-                                                opacity="1" style="display: block;">
-                                                <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                                                    <path fill="rgb(255,255,255)" fill-opacity="1"
-                                                        d=" M22.53499984741211,-6.578999996185303 C17.27400016784668,61.75600051879883 10.685999870300293,63.60300064086914 0,63.1510009765625 C-28.43400001525879,61.948001861572266 -37.66899871826172,51.10300064086914 -37.66600036621094,-7.236999988555908 C-37.66299819946289,-56.4630012512207 -31.420000076293945,-75.87100219726562 -15.131999969482422,-75.21900177001953 C17.572999954223633,-73.90899658203125 24.50200080871582,-32.12099838256836 22.53499984741211,-6.578999996185303z">
-                                                    </path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                        <g mask="url(#__lottie_element_961)" style="display: block;">
-                                            <g transform="matrix(0.6446395516395569,0,0,0.6446395516395569,399.0071105957031,514.3107299804688)"
-                                                opacity="1">
-                                                <path fill="rgb(75,75,75)" fill-opacity="1"
-                                                    d=" M-1.7940000295639038,-36.165000915527344 C11.623000144958496,-30.3439998626709 16.125999450683594,-14.878000259399414 15.199999809265137,13.12399959564209 C14.27400016784668,41.125999450683594 15.121000289916992,56.91400146484375 -2.5199999809265137,56.76100158691406 C-19.124000549316406,56.617000579833984 -18.892000198364258,39.356998443603516 -18.867000579833984,6.583000183105469 C-18.841999053955078,-26.19099998474121 -14.723999977111816,-41.775001525878906 -1.7940000295639038,-36.165000915527344z">
-                                                </path>
-                                            </g>
-                                        </g>
-                                        <g mask="url(#__lottie_element_949)" style="display: block;">
-                                            <g transform="matrix(0.5061323046684265,0,0,0.5061323046684265,390.55975341796875,501.8246765136719)"
-                                                opacity="1">
-                                                <path fill="rgb(255,255,255)" fill-opacity="1"
-                                                    d=" M11.57800006866455,7.63100004196167 C6.814000129699707,14.859999656677246 -2.2330000400543213,17.30299949645996 -8.626999855041504,13.088000297546387 C-15.020999908447266,8.873000144958496 -16.341999053955078,-0.4020000100135803 -11.57800006866455,-7.63100004196167 C-6.814000129699707,-14.859999656677246 2.2330000400543213,-17.30299949645996 8.626999855041504,-13.088000297546387 C15.020999908447266,-8.873000144958496 16.341999053955078,0.4020000100135803 11.57800006866455,7.63100004196167z">
-                                                </path>
-                                            </g>
-                                        </g>
-                                        <g mask="url(#__lottie_element_938)" style="display: block;">
-                                            <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,383.1854248046875,585.7963256835938)"
-                                                opacity="1">
-                                                <path fill="rgb(138,226,23)" fill-opacity="1"
-                                                    d=" M-18.023000717163086,-89.572998046875 C4.313000202178955,-72.55500030517578 33.31100082397461,-36.39099884033203 40.61600112915039,-20.9689998626709 C47.92100143432617,-5.546999931335449 22.95199966430664,89.572998046875 22.95199966430664,89.572998046875 C22.95199966430664,89.572998046875 -41.95500183105469,40.1879997253418 -41.95500183105469,40.1879997253418 C-41.95500183105469,40.1879997253418 -18.023000717163086,-89.572998046875 -18.023000717163086,-89.572998046875z">
-                                                </path>
-                                            </g>
-                                        </g>
-                                        <g style="display: none;">
-                                            <path></path>
-                                        </g>
-                                        <g style="display: none;">
-                                            <path stroke-linecap="round" stroke-linejoin="miter" fill-opacity="0"
-                                                stroke-miterlimit="10"></path>
-                                        </g>
-                                        <g style="display: none;">
-                                            <path stroke-linecap="round" stroke-linejoin="miter" fill-opacity="0"
-                                                stroke-miterlimit="10"></path>
-                                        </g>
-                                        <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,674.4816284179688,515.2670288085938)"
-                                            opacity="1" style="display: block;">
-                                            <path fill="rgb(91,91,91)" fill-opacity="1"
-                                                d=" M78.9280014038086,20.947999954223633 C59.520999908447266,94.072998046875 8.451000213623047,143.97300720214844 -35.13999938964844,132.4040069580078 C-50.54999923706055,128.31399536132812 -62.96200180053711,117.09100341796875 -71.71299743652344,101.05699920654297 C-87.71600341796875,71.73500061035156 -91.4749984741211,26.326000213623047 -78.9280014038086,-20.947999954223633 C-66.82499694824219,-66.55000305175781 -42.409000396728516,-103.11900329589844 -15.17199993133545,-121.38200378417969 C1.2669999599456787,-132.40499877929688 18.732999801635742,-136.75799560546875 35.13999938964844,-132.4040069580078 C78.73100280761719,-120.83499908447266 98.33499908447266,-52.176998138427734 78.9280014038086,20.947999954223633z">
-                                            </path>
-                                        </g>
-                                        <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,650.0999755859375,365.06298828125)"
-                                            opacity="1" style="display: block;">
-                                            <path fill="rgb(91,91,91)" fill-opacity="1"
-                                                d=" M-96.85399627685547,-89.53600311279297 C17.6200008392334,-47.91999816894531 40.263999938964844,15.42300033569336 40.263999938964844,107.42500305175781 C40.263999938964844,107.42500305175781 96.10399627685547,99.447998046875 96.10399627685547,99.447998046875 C93.97699737548828,59.5629997253418 62.91400146484375,-55.55799865722656 -93.43699645996094,-107.67500305175781">
-                                            </path>
-                                        </g>
-                                        <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,684.5789794921875,516.2930297851562)"
-                                            opacity="1" style="display: block;">
-                                            <path fill="rgb(112,149,214)" fill-opacity="1"
-                                                d=" M60.50899887084961,19.8799991607666 C41.683998107910156,77.177001953125 -0.6669999957084656,114.7249984741211 -34.084999084472656,103.74600219726562 C-45.56700134277344,99.9739990234375 -54.500999450683594,90.96299743652344 -60.518001556396484,78.43499755859375 C-72.01399993896484,54.500999450683594 -72.86599731445312,17.729999542236328 -60.50899887084961,-19.8799991607666 C-48.8650016784668,-55.32099914550781 -28.219999313354492,-83.20600128173828 -6.255000114440918,-96.7239990234375 C7.289999961853027,-105.06099700927734 21.33799934387207,-107.93399810791016 34.084999084472656,-103.74600219726562 C67.50299835205078,-92.76699829101562 79.33399963378906,-37.41699981689453 60.50899887084961,19.8799991607666z">
-                                            </path>
-                                        </g>
-                                        <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,729.0328979492188,467.12939453125)"
-                                            opacity="1" style="display: block;">
-                                            <path fill="rgb(112,149,214)" fill-opacity="1"
-                                                d=" M-50.763999938964844,-38.599998474121094 C-23.444000244140625,-47.64500045776367 -10.156999588012695,-52.52399826049805 7.026000022888184,-57.28099822998047 C28.450000762939453,-63.2130012512207 41.62300109863281,-62.41400146484375 48.409000396728516,-50.03900146484375 C56.18199920654297,-35.8650016784668 44.018001556396484,-12.116999626159668 22.062999725341797,6.644999980926514 C33.638999938964844,6.245999813079834 49.207000732421875,8.640999794006348 39.62699890136719,28.201000213623047 C30.047000885009766,47.76100158691406 8.119999885559082,60.862998962402344 8.119999885559082,60.862998962402344 C8.119999885559082,60.862998962402344 -50.763999938964844,-38.599998474121094 -50.763999938964844,-38.599998474121094z">
-                                            </path>
-                                        </g>
-                                        <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,692.89794921875,519.0260009765625)"
-                                            opacity="1" style="display: block;">
-                                            <path fill="rgb(111,213,216)" fill-opacity="1"
-                                                d=" M36.70199966430664,12.057999610900879 C24.246000289916992,49.97200012207031 -2.2839999198913574,75.30899810791016 -22.554000854492188,68.64900207519531 C-42.82400131225586,61.98899841308594 -49.15800094604492,25.856000900268555 -36.70199966430664,-12.057999610900879 C-24.246000289916992,-49.97200012207031 2.2839999198913574,-75.30899810791016 22.554000854492188,-68.64900207519531 C42.82400131225586,-61.98899841308594 49.15800094604492,-25.856000900268555 36.70199966430664,12.057999610900879z">
-                                            </path>
-                                        </g>
-                                        <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,660.2940063476562,594.531005859375)"
-                                            opacity="1" style="display: block;">
-                                            <path fill="rgb(89,204,2)" fill-opacity="1"
-                                                d=" M-60.54800033569336,53.02799987792969 C-51.933998107910156,61.17900085449219 -25.243000030517578,74.80899810791016 20.014999389648438,48.95199966430664 C72.56700134277344,18.92799949645996 79.83599853515625,-51.52799987792969 74.77300262451172,-71.14900207519531 C69.70999908447266,-90.7699966430664 48.10499954223633,-93.99400329589844 32.367000579833984,-71.14900207519531 C12.746000289916992,-42.66699981689453 -27.761999130249023,-8.48799991607666 -56.24399948120117,2.9049999713897705 C-84.72599792480469,14.29800033569336 -69.16200256347656,44.87699890136719 -60.54800033569336,53.02799987792969z">
-                                            </path>
-                                        </g>
-                                        <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,444.5827941894531,594.8638916015625)"
-                                            opacity="1" style="display: block;">
-                                            <path fill="rgb(244,145,2)" fill-opacity="1"
-                                                d=" M-29.048999786376953,-7.034999847412109 C-28.398000717163086,6.757999897003174 -12.798999786376953,18.454999923706055 -0.10899999737739563,16.499000549316406 C11.42300033569336,14.720999717712402 24.891000747680664,4.125999927520752 26.136999130249023,-13.640999794006348 C26.136999130249023,-13.640999794006348 -29.048999786376953,-7.034999847412109 -29.048999786376953,-7.034999847412109z">
-                                            </path>
-                                        </g>
-                                        <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,437.8529968261719,572.9363403320312)"
-                                            opacity="1" style="display: block;">
-                                            <path fill="rgb(255,194,0)" fill-opacity="1"
-                                                d=" M34.992000579833984,15.211999893188477 C29.714000701904297,-7.2210001945495605 11.13599967956543,-28.235000610351562 -15.696000099182129,-22.07699966430664 C-42.52799987792969,-15.918999671936035 -36.26900100708008,14.74899959564209 -27.91200065612793,34.542999267578125 C11.00100040435791,34.88800048828125 34.992000579833984,15.211999893188477 34.992000579833984,15.211999893188477z">
-                                            </path>
-                                        </g>
-                                        <g transform="matrix(0.7599999904632568,0,0,0.7599999904632568,426.6999816894531,565.0680541992188)"
-                                            opacity="1" style="display: block;">
-                                            <path stroke-linecap="round" stroke-linejoin="miter" fill-opacity="0"
-                                                stroke-miterlimit="10" stroke="rgb(255,222,0)" stroke-opacity="1"
-                                                stroke-width="13"
-                                                d=" M22.792999267578125,10.017999649047852 C18.816999435424805,2.871000051498413 5.658999919891357,-0.4189999997615814 -2.441999912261963,3.194000005722046">
-                                            </path>
-                                        </g>
-                                        <g transform="matrix(1.0000004768371582,0,0,1.0000004768371582,-0.00054931640625,-0.000244140625)"
-                                            opacity="1" style="display: block;">
-                                            <g opacity="1"
-                                                transform="matrix(0.7599999904632568,0,0,0.7599999904632568,407.72601318359375,618.3510131835938)">
-                                                <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                                                    <path fill="rgb(138,226,23)" fill-opacity="1"
-                                                        d=" M-26.584999084472656,-21.395000457763672 C-6.669000148773193,-4.307000160217285 20.770000457763672,10.741000175476074 26.08099937438965,13.395999908447266 C31.392000198364258,16.051000595092773 7.934999942779541,28.88599967956543 -11.095000267028809,15.166000366210938 C-30.125,1.4459999799728394 -26.584999084472656,-21.395000457763672 -26.584999084472656,-21.395000457763672z">
-                                                    </path>
-                                                </g>
-                                            </g>
-                                            <g opacity="1"
-                                                transform="matrix(0.7599999904632568,0,0,0.7599999904632568,485.98199462890625,654.5499877929688)">
-                                                <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                                                    <path fill="rgb(138,226,23)" fill-opacity="1"
-                                                        d=" M-34.077999114990234,-16.900999069213867 C-12.835000038146973,-6.2789998054504395 22.570999145507812,1.687000036239624 34.077999114990234,3.4570000171661377 C33.03799819946289,12.111000061035156 20.243999481201172,21.488000869750977 -5.868000030517578,14.406999588012695 C-34.19200134277344,2.9000000953674316 -34.077999114990234,-16.900999069213867 -34.077999114990234,-16.900999069213867z">
-                                                    </path>
-                                                </g>
-                                            </g>
-                                            <g opacity="1"
-                                                transform="matrix(0.7599999904632568,0,0,0.7599999904632568,443.9519958496094,663.60498046875)">
-                                                <g opacity="1" transform="matrix(1,0,0,1,0,0)">
-                                                    <path fill="rgb(138,226,23)" fill-opacity="1"
-                                                        d=" M-28.374000549316406,-18.180999755859375 C-8.458000183105469,-6.23199987411499 22.520999908447266,6.603000164031982 28.27400016784668,8.815999984741211 C34.027000427246094,11.029000282287598 13.49899959564209,26.41900062561035 -10.842000007629395,12.256999969482422 C-35.18299865722656,-1.9049999713897705 -28.374000549316406,-18.180999755859375 -28.374000549316406,-18.180999755859375z">
-                                                    </path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </g>
-                                    <g clip-path="url(#__lottie_element_683)" style="display: none;">
-                                        <g style="display: none;">
-                                            <path></path>
-                                        </g>
-                                        <g style="display: none;">
-                                            <path></path>
-                                        </g>
-                                        <g style="display: none;">
-                                            <path></path>
-                                        </g>
-                                        <g style="display: none;">
-                                            <path></path>
-                                        </g>
-                                        <g style="display: none;">
-                                            <path></path>
-                                        </g>
-                                        <g style="display: none;">
-                                            <path></path>
-                                        </g>
-                                        <g style="display: none;">
-                                            <path></path>
-                                        </g>
-                                        <g clip-path="url(#__lottie_element_850)" style="display: none;">
-                                            <g style="display: none;">
-                                                <path></path>
-                                            </g>
-                                        </g>
-                                        <g clip-path="url(#__lottie_element_843)" style="display: none;">
-                                            <g style="display: none;">
-                                                <path></path>
-                                            </g>
-                                        </g>
-                                        <g clip-path="url(#__lottie_element_690)" style="display: none;">
-                                            <g style="display: none;">
-                                                <g>
-                                                    <path></path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                        <g clip-path="url(#__lottie_element_836)" style="display: none;">
-                                            <g style="display: none;">
-                                                <path></path>
-                                            </g>
-                                        </g>
-                                        <g clip-path="url(#__lottie_element_829)" style="display: none;">
-                                            <g style="display: none;">
-                                                <path></path>
-                                            </g>
-                                        </g>
-                                        <g clip-path="url(#__lottie_element_822)" style="display: none;">
-                                            <g style="display: none;">
-                                                <path></path>
-                                            </g>
-                                        </g>
-                                        <g mask="url(#__lottie_element_698)" style="display: none;">
-                                            <g>
-                                                <g>
-                                                    <path></path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                        <g clip-path="url(#__lottie_element_804)" style="display: none;">
-                                            <g style="display: none;">
-                                                <g>
-                                                    <path></path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                        <g mask="url(#__lottie_element_812)" style="display: none;">
-                                            <g>
-                                                <path></path>
-                                            </g>
-                                        </g>
-                                        <g mask="url(#__lottie_element_793)" style="display: none;">
-                                            <g>
-                                                <path></path>
-                                            </g>
-                                        </g>
-                                        <g mask="url(#__lottie_element_782)" style="display: none;">
-                                            <g>
-                                                <path></path>
-                                            </g>
-                                        </g>
-                                        <g clip-path="url(#__lottie_element_776)" style="display: none;">
-                                            <g style="display: none;">
-                                                <g>
-                                                    <path></path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                        <g mask="url(#__lottie_element_766)" style="display: none;">
-                                            <g>
-                                                <path></path>
-                                            </g>
-                                        </g>
-                                        <g mask="url(#__lottie_element_754)" style="display: none;">
-                                            <g>
-                                                <path></path>
-                                            </g>
-                                        </g>
-                                        <g mask="url(#__lottie_element_743)" style="display: none;">
-                                            <g>
-                                                <path></path>
-                                            </g>
-                                        </g>
-                                        <g style="display: none;">
-                                            <path></path>
-                                        </g>
-                                        <g style="display: none;">
-                                            <path stroke-linecap="round" stroke-linejoin="miter" fill-opacity="0"
-                                                stroke-miterlimit="10"></path>
-                                        </g>
-                                        <g style="display: none;">
-                                            <path stroke-linecap="round" stroke-linejoin="miter" fill-opacity="0"
-                                                stroke-miterlimit="10"></path>
-                                        </g>
-                                        <g style="display: none;">
-                                            <path></path>
-                                        </g>
-                                        <g style="display: none;">
-                                            <path></path>
-                                        </g>
-                                        <g style="display: none;">
-                                            <path></path>
-                                        </g>
-                                        <g style="display: none;">
-                                            <path></path>
-                                        </g>
-                                        <g style="display: none;">
-                                            <path></path>
-                                        </g>
-                                        <g style="display: none;">
-                                            <path></path>
-                                        </g>
-                                        <g style="display: none;">
-                                            <path></path>
-                                        </g>
-                                        <g style="display: none;">
-                                            <path></path>
-                                        </g>
-                                        <g style="display: none;">
-                                            <path stroke-linecap="round" stroke-linejoin="miter" fill-opacity="0"
-                                                stroke-miterlimit="10"></path>
-                                        </g>
-                                        <g style="display: none;">
-                                            <g>
-                                                <g>
-                                                    <path></path>
-                                                </g>
-                                            </g>
-                                            <g>
-                                                <g>
-                                                    <path></path>
-                                                </g>
-                                            </g>
-                                            <g>
-                                                <g>
-                                                    <path></path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </g>
-                                    <g style="display: none;">
-                                        <g>
-                                            <g>
-                                                <g>
-                                                    <path></path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                        <g>
-                                            <g>
-                                                <g>
-                                                    <path></path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                        <g>
-                                            <g>
-                                                <g>
-                                                    <path></path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                        <g>
-                                            <g>
-                                                <g>
-                                                    <path></path>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </g>
-                                </g>
-                            </svg></div>
-                    </section>
-
                 </div>
-                <div class="sidebar-buttons bottom-nav">
-                    <a href="" class="button-in-sidebar">
-                        <span class="icon-and-text-wrap selected">
-                            <div class="icon-in-button">
-                                <img src="{{ url('duolingo-clone-master/assets/svg/home-in-sidebar.svg') }}"
-                                    alt="home-icon">
-                            </div>
-
-                        </span>
-                    </a>
-                    <a href="leaderboard.html" class="button-in-sidebar">
-                        <span class="icon-and-text-wrap">
-                            <div class="icon-in-button">
-                                <img src="{{ url('duolingo-clone-master/assets/svg/badge-in-sidebar.svg') }}"
-                                    alt="home-icon">
-                            </div>
-
-                        </span>
-                    </a>
-                    <a href="profile-page.html" class="button-in-sidebar">
-                        <span class="icon-and-text-wrap">
-                            <div class="icon-in-button">
-                                <img id="profile-image"
-                                    src="{{ url('duolingo-clone-master/assets/svg/profile-image-temp.svg') }}"
-                                    alt="home-icon" class="profile">
-                            </div>
-
-                        </span>
-                    </a>
-                    <a href="./shoppingpage.html" class="button-in-sidebar">
-                        <span class="icon-and-text-wrap">
-                            <div class="icon-in-button">
-                                <img src="{{ url('duolingo-clone-master/assets/svg/shop-in-sidebar.svg') }}"
-                                    alt="home-icon">
-                            </div>
-                        </span>
-                    </a>
-                    <a href="./faq.html" class="button-in-sidebar">
-                        <span class="icon-and-text-wrap">
-                            <div class="icon-in-button">
-                                <img src="{{ url('duolingo-clone-master/assets/images/sidebar-icon-faq.png') }}"
-                                    alt="home-icon">
-                            </div>
-
-                        </span>
-                    </a>
-                </div>
+                @livewire('sidebar-buttons')
             </div>
         </div>
     </div>
@@ -1613,8 +476,8 @@ style="padding: 0px 0px 0px 300px;"
                         </g>
                         <g clip-path="url(#__lottie_element_10)" transform="matrix(1,0,0,1,0,0)" opacity="1"
                             style="display: none;">
-                            <g clip-path="url(#__lottie_element_81)" transform="matrix(1,0,0,1,0,0)"
-                                opacity="1" style="display: block;">
+                            <g clip-path="url(#__lottie_element_81)" transform="matrix(1,0,0,1,0,0)" opacity="1"
+                                style="display: block;">
                                 <g transform="matrix(1,0,0,1,549.468017578125,648.9710083007812)" opacity="0.3"
                                     style="display: block;">
                                     <g opacity="1" transform="matrix(1,0,0,1,0,0)">
@@ -1757,8 +620,7 @@ style="padding: 0px 0px 0px 300px;"
                             <g transform="matrix(0.9332726001739502,-0.3591688573360443,0.3591688573360443,0.9332726001739502,502.48114013671875,584.2793579101562)"
                                 opacity="1" style="display: block;">
                                 <path stroke-linecap="round" stroke-linejoin="miter" fill-opacity="0"
-                                    stroke-miterlimit="4" stroke="rgb(61,190,1)" stroke-opacity="1"
-                                    stroke-width="8"
+                                    stroke-miterlimit="4" stroke="rgb(61,190,1)" stroke-opacity="1" stroke-width="8"
                                     d=" M120.89900207519531,-6.545000076293945 C127.84700012207031,-41.4119987487793 173.822998046875,-47.99700164794922 199.14300537109375,-26.506999969482422 M64.46399688720703,-9.555999755859375 C57.84299850463867,-47.46900177001953 8.741000175476074,-60.76599884033203 -17.645999908447266,-42.92100143432617">
                                 </path>
                             </g>
@@ -1833,7 +695,7 @@ style="padding: 0px 0px 0px 300px;"
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.7/lottie.min.js"></script>
     <script src="{{ url('duolingo-clone-master/js/learn.js') }}"></script>
     <script src="{{ url('duolingo-clone-master/js/updateUserData.js') }}" type="module"></script>
-
+    @livewireScripts()
 </body>
 
 </html>

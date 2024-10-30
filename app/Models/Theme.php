@@ -8,7 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Theme extends Model
 {
     use HasFactory;
-    public function lessons() {
+    protected $fillable = ['name', 'level_id'];
+    public function lessons()
+    {
         return $this->hasMany(Lesson::class);
+    }
+    public function level()
+    {
+        return $this->belongsTo(Level::class);
     }
 }

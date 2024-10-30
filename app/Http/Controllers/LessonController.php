@@ -18,23 +18,23 @@ class LessonController extends Controller
     {
         //
         // $lessons = Lesson::with('theme')->get();
-if(!auth()->user()) {
+        if (!auth()->user()) {
             return redirect()->route('login');
-}
+        }
         $lessons = Lesson::with('exercises')->get();
         $themes = Theme::with(['lessons.exercises'])->get();
 
         $learner = auth()->user()->learner;
 
         $lastOrder = auth()->user()->learner->progress()
-    ->with('lesson') // Load the related lessons
-    ->get() // Retrieve the progress records
-    ->max('lesson.order'); //
+            ->with('lesson') // Load the related lessons
+            ->get() // Retrieve the progress records
+            ->max('lesson.order'); //
 
         $lastTheme = auth()->user()->learner->progress()
-    ->with('lesson')->with('lesson.theme') // Load the related lessons
-    ->get() // Retrieve the progress records
-    ->max('lesson.theme.order'); //
+            ->with('lesson')->with('lesson.theme') // Load the related lessons
+            ->get() // Retrieve the progress records
+            ->max('lesson.theme.order'); //
 
 
         if ($lastTheme) {
@@ -48,7 +48,8 @@ if(!auth()->user()) {
         // }else{
         //     $lastOrder = 0;
         // }
-    return view(view: 'learn')->with('themes',$themes)->with('lastLesson',$lastOrder)->with('lastTheme', $lastTheme)->with('lastInTheme', $lastInTheme)->with('learner' ,$learner);
+        $userId = User::find(1);
+        return view(view: 'learn')->with('userId', $userId)->with('themes', $themes)->with('lastLesson', $lastOrder)->with('lastTheme', $lastTheme)->with('lastInTheme', $lastInTheme)->with('learner', $learner);
     }
 
     /**
@@ -66,7 +67,7 @@ if(!auth()->user()) {
     public function store(Request $request)
     {
         $theme = Theme::with('lessons')->find($request->theme_id);
-$lastOrder = $theme->lessons ? $theme->lessons->max('order') : 0;
+        $lastOrder = $theme->lessons ? $theme->lessons->max('order') : 0;
 
         //
         $lesson = new Lesson();
@@ -83,10 +84,9 @@ $lastOrder = $theme->lessons ? $theme->lessons->max('order') : 0;
      */
     public function show(Lesson $lesson)
     {
-        //
-        // dd(auth()->user()->learner->current_hearts);
-        if (auth()->user()->learner->current_hearts > 0)
-        {
+        return view('types.dialogue1')->with('lesson', $lesson);
+
+        if (auth()->user()->learner->current_hearts > 0) {
             return view('types.dialogue1')->with('lesson', $lesson);
             return redirect()->action('App\Http\Controllers\ExerciseController@show', $lesson->exercises()->orderBy('order')->first());
         } else {

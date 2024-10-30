@@ -60,7 +60,7 @@
   position: relative;
 }
 
-#profile-image:not(.profile) {
+.user-info-div #profile-image:not(.profile) {
   height: 128px;
   width: 128px;
   border-radius: 50%;
@@ -119,7 +119,7 @@
 
 /* Logout Button */
 
-.icon-and-text-wrap {
+/* .icon-and-text-wrap {
   height: 40px;
   display: flex;
   flex-direction: row;
@@ -127,7 +127,7 @@
   padding: 4px 8px;
   border: 2px solid transparent;
   padding-left: 20%;
-}
+} */
 
 .icon-in-button {
   display: flex;

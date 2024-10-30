@@ -6,27 +6,43 @@ use Livewire\Component;
 
 class Assist extends Component
 {
-        public $answered;
+    protected $listeners = [
+        'answeredWell' => 'green',
+        'continued' => 'ungreen',
+    ];
+    public $correct = 'false';
+    public $answered;
     public $exercise;
     public $answerNumber = 0;
-    public function updated($propertyName) {
+    public function updated($propertyName)
+    {
         if ($propertyName != 'answered') {
-        dd($propertyName);
-
+            dd($propertyName);
         }
-
     }
-            public function updatedExercise($value
+    public function updatedExercise(
+        $value
     ) {
-        dd($value);}
-    public function mount($exercise) {
+        dd($value);
+    }
+    public function mount($exercise)
+    {
         $this->exercise = $exercise;
     }
     // public function mount($exercise) {
     //     $this->exercise = $exercise;
     // }
-    public function updateAnswered() {
+    public function updateAnswered()
+    {
         $this->dispatch('answeredUpdated', $this->answered);
+    }
+    public function green()
+    {
+        $this->correct = true;
+    }
+    public function ungreen()
+    {
+        $this->correct = false;
     }
     public function render()
     {
