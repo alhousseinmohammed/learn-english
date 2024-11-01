@@ -41,7 +41,7 @@ class Users extends Component
             ]);
         } else {
             Admin::create([
-                'user_id' => $this->user->id,  // Assuming user_id is the foreign key in the Learner table
+                'user_id' => $user->id,  // Assuming user_id is the foreign key in the Learner table
                 // Add any other learner-specific fields you want to fill
             ]);
         }

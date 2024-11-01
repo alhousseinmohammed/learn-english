@@ -1,7 +1,7 @@
 {{-- @stack('profile_styles')
 @stack('learn_styles')
 @stack('leaderboard_styles') --}}
-@if (true)
+@if (auth()->user()->role == 'admin')
     <!DOCTYPE html>
     <html lang="en">
 

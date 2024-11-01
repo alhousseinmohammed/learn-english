@@ -115,14 +115,14 @@
                         <tr>
                             <td>
                                 <div class="league flex">
-                                    <span class="material-symbols-sharp"> arming_countdown </span>
+                                    <span class="material-symbols-sharp"> upgrade </span>
                                     <h3>{{ $levels_number }}</h3>
                                     <p>Levels</p>
                                 </div>
                             </td>
                             <td>
                                 <div class="league flex">
-                                    <span class="material-symbols-sharp"> arming_countdown </span>
+                                    <span class="material-symbols-sharp"> road </span>
                                     <h3>{{ $themes_number }}</h3>
                                     <p>Themes</p>
                                 </div>
@@ -131,14 +131,14 @@
                         <tr>
                             <td>
                                 <div class="league flex">
-                                    <span class="material-symbols-sharp"> arming_countdown </span>
+                                    <span class="material-symbols-sharp"> book </span>
                                     <h3>{{ $lessons_number }}</h3>
                                     <p>Lessons</p>
                                 </div>
                             </td>
                             <td>
                                 <div class="league flex">
-                                    <span class="material-symbols-sharp"> arming_countdown </span>
+                                    <span class="material-symbols-sharp"> exercise </span>
                                     <h3>{{ $exercises_number }}</h3>
                                     <p>Exercises</p>
                                 </div>

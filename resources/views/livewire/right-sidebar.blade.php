@@ -49,7 +49,7 @@
                 </div>
 
 
-                <div class="try-super-box" x-show="false" x-cloak>
+                <div class="try-super-box" x-show="true" x-cloak>
                     <img src="{{ url('duolingo-clone-master/assets/svg/super-icon.svg') }}" alt="super-text"
                         id="try-super-image-one">
                     <img src="{{ url('duolingo-clone-master/assets/svg/super-duo-owl.svg') }}" alt="super-duo-owl"
@@ -66,7 +66,7 @@
 
 
                 </div>
-                <div class="try-super-box" x-show="false" x-cloak>
+                <div class="try-super-box" x-show="true" x-cloak>
                     <div class="league-header-with-link">
                         <h2>Nexus League</h2>
                         <h2><a href="{{ route('leaderboard') }}">View League</a></h2>
@@ -81,7 +81,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="try-super-box" x-data="{ activeTab: 'followers' }" x-show="true" x-cloak>
+                <div class="try-super-box" x-data="{ activeTab: 'followers' }" x-show="false" x-cloak>
                     <!-- Tabs Header -->
                     <div class="tabs">
                         <div class="tab" :class="{ 'active': activeTab === 'followers' }"
